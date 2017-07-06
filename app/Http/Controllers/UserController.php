@@ -8,7 +8,7 @@ use DB;
 use Dingo\Api\Routing\Helpers;
 use Illuminate\Http\Request;
 use JWTAuth;
-
+use Illuminate\Support\Facades\Auth;
 
 
 class UserController extends Controller
@@ -18,6 +18,12 @@ class UserController extends Controller
     public function index(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         return $currentUser;
+    }
+
+    public function showDonate(){
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        $dona = DB::table('roomdonates')->select('id','roomreq_id','user_id','status')->where('user_id',$currentUser->id)->get();
+        return $dona;
     }
 
     public function logout(){

@@ -31,6 +31,14 @@ $api->version('v1', function (Router $api) {
 
         $api->get('index', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
+
+        $api->resource('req','App\\Http\\Controllers\\RoomreqController');
+        $api->post('req/refresh','App\\Http\\Controllers\\RoomreqController@refresh');
+        $api->post('req/detail','App\\Http\\Controllers\\RoomreqController@show');
+        $api->post('req/success','App\\Http\\Controllers\\RoomreqController@status_suc');
+        $api->post('req/thankyou','App\\Http\\Controllers\\RoomreqController@thankyou');
+
+        $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
     });
 
 });
