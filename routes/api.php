@@ -25,6 +25,7 @@ $api->version('v1', function (Router $api) {
     $api->group(['prefix' => 'auth'], function(Router $api) {
         $api->post('register', 'App\\Http\\Controllers\\RegisterController@signUp');
         $api->post('login', 'App\\Http\\Controllers\\LoginController@login');
+        $api->post('check', 'App\\Http\\Controllers\\RegisterController@check');
     });
 
     $api->group(['middleware' => ['api.auth', 'jwt.auth']], function (Router $api) {
@@ -32,7 +33,7 @@ $api->version('v1', function (Router $api) {
         $api->get('index', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
         $api->get('swap', 'App\\Http\\Controllers\\UserController@swapstatus');
-        $api->post('check', 'App\\Http\\Controllers\\UserController@check');
+
 
         $api->resource('req','App\\Http\\Controllers\\RoomreqController');
         $api->post('req/refresh','App\\Http\\Controllers\\RoomreqController@refresh');

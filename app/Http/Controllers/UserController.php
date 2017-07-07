@@ -20,20 +20,6 @@ class UserController extends Controller
         return $currentUser;
     }
 
-    //Check Register
-    public function check(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:191|Alpha|unique:users',
-            'email' => 'required|string|email|max:191|unique:users',
-            'phone' => 'required|string|max:10|unique:users',
-       ]);
-       if ($validator->fails()) {
-        //    return $validator->errors()->toArray();
-            return $validator->messages();
-            // return $validator->errors()->all();
-       }
-    }
-
     public function showDonate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $dona = DB::table('roomdonates')->select('id','roomreq_id','user_id','status')->where('user_id',$currentUser->id)->get();
