@@ -71,4 +71,11 @@ return [
         ]
     ],
 
+    'friend_create' => [
+        'validation_rules' => [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]
+    ],
+
 ];

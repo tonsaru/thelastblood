@@ -26,6 +26,7 @@ $api->version('v1', function (Router $api) {
         $api->post('register', 'App\\Http\\Controllers\\RegisterController@signUp');
         $api->post('login', 'App\\Http\\Controllers\\LoginController@login');
         $api->post('check', 'App\\Http\\Controllers\\RegisterController@check');
+        $api->post('pim', 'App\\Http\\Controllers\\RegisterController@pim');
     });
 
     $api->group(['middleware' => ['api.auth', 'jwt.auth']], function (Router $api) {

@@ -56,4 +56,13 @@ class RegisterController extends Controller
               // return $validator->errors()->all();
          }
       }
+
+      public function pim(Request $request){
+        //   $a = "array("121212123","12121212","1213131312")";
+        //   $digits = substr($a, strpos($a, '(')+2 , strlen($a)-9);
+        // $splitName = explode(' ', $name);
+        //
+        // $data = array($request->data);
+        return $request->data;
+      }
 }

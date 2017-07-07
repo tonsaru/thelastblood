@@ -56,13 +56,12 @@ class RoomreqController extends Controller
             return $validator->messages();
         }
 
-        // $check = Roomreq::where([
-        //         ['patient_id',$request->patient_id],
-        //         ['patient_hos',$request->patient_hos],
-        //         ['patient_province',$request->patient_province]
-        //     ])->first();
-        //
-        // if($check == ''){
+        $check = Roomreq::where([
+                ['patient_id',$request->patient_id],
+                ['patient_hos',$request->patient_hos],
+                ['patient_province',$request->patient_province]
+            ])->first();
+        if($check == ''){
             $currentUser = JWTAuth::parseToken()->authenticate();
 
             $req = new Roomreq;
@@ -84,10 +83,10 @@ class RoomreqController extends Controller
 
             $req->save();
             return "Request Success  : ".$req;
-        // }elseif($check->patient_status == "not complete"){
-        //     return "patient same";
-        // }
-        //
+        }elseif($check->patient_status == "not complete"){
+            return "patient same";
+        }
+
 
     }
 
