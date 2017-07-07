@@ -55,6 +55,5 @@ class RegisterController extends Controller
               return $validator->messages();
               // return $validator->errors()->all();
          }
-         return "Validate OK!!";
       }
 }
