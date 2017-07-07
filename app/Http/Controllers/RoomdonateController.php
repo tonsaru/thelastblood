@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Roomdonate;
+use App\User;
 use DB;
 use JWTAuth;
+use App\Roomreq;
 
 class RoomdonateController extends Controller
 {
@@ -14,15 +16,21 @@ class RoomdonateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     //show all request not my request
+
+     //show all request not my request at status not complete
+     //จะแสดงแค่ห้องเด่วก็ให้มาใส่ เงื่อนไขตรงนี้เอา
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $req = DB::table('roomreqs')
-            ->select('user_id','roomreq_id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos')
-            ->where('user_id', '!=', $currentUser->id)
-            ->get();
-            return $req;
+        if($currentUser->status == "ready"){
+            $req = DB::table('roomreqs')
+                ->select('user_id','id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos','patient_status')
+                ->where('user_id', '!=', $currentUser->id)
+                ->where('patient_status', '!=', 'complete')
+                ->get();
+                return $req;
+        }
+        return "you not ready plz check status or waiting time";
     }
 
     /**
@@ -32,7 +40,8 @@ class RoomdonateController extends Controller
      */
     public function create()
     {
-        //
+
+
     }
 
     /**
@@ -43,7 +52,35 @@ class RoomdonateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        $update = Roomreq::find($request->roomreq_id);
+
+        if($currentUser->status == "ready"){
+            // check add myself
+            if($currentUser->id == $update->user_id)
+            {
+                return "Hello myself";
+            }
+
+
+            $update->countblood = $update->countblood-1;
+            // return $update;
+            $update->save();
+
+            $dona = new Roomdonate;
+            $dona->roomreq_id = $request->roomreq_id;
+            $dona->user_id = $currentUser->id;
+            $dona->status = $request->status;
+            $dona->save();
+
+
+
+            $currentUser->status='unready';
+            $currentUser->save();
+
+            return "You donate blood to ".$update->patient_name.' Your Status is '.$currentUser->status." Roomreq blood remaining : ".$update->countblood;
+        }
+        return "you not ready plz check status or waiting time";
     }
 
     /**

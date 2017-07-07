@@ -10,6 +10,7 @@ use Config;
 use Dingo\Api\Routing\Helpers;
 use App\Roomreq;
 use DB;
+use App\Http\Controllers\Controller;
 
 class RoomreqController extends Controller
 {
@@ -55,25 +56,42 @@ class RoomreqController extends Controller
             return $validator->messages();
         }
 
-      $currentUser = JWTAuth::parseToken()->authenticate();
+        //check same data ( patient_id, patient_hos, patient_province )
+        // $check = DB::table('roomreqs')->where([
+        //         ['patient_id',$request->patient_id],
+        //         ['patient_hos',$request->patient_hos],
+        //         ['patient_province',$request->patient_province]
+        //     ]);
 
-      $req = new Roomreq;
-      $req->user_id = $currentUser->id;
-      $req->patient_id = $request->patient_id;
-      $req->patient_name = $request->patient_name;
-      $req->patient_blood = $request->patient_blood;
-      $req->patient_blood_type = $request->patient_blood_type;
-      $req->patient_detail = $request->patient_detail;
-      $req->patient_province = $request->patient_province;
-      $req->countblood = $request->countblood;
-      $req->patient_hos = $request->patient_hos;
-      $req->patient_hos_la = $request->patient_la;
-      $req->patient_hos_long = $request->patient_long;
+        $check = Roomreq::where([
+                ['patient_id',$request->patient_id],
+                ['patient_hos',$request->patient_hos],
+                ['patient_province',$request->patient_province]
+            ])->first();
 
-      $req->save();
+        if($check == ''){
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            $req = new Roomreq;
+            $req->user_id = $currentUser->id;
+            $req->patient_id = $request->patient_id;
+            $req->patient_name = $request->patient_name;
+            $req->patient_blood = $request->patient_blood;
+            $req->patient_blood_type = $request->patient_blood_type;
+            $req->patient_detail = $request->patient_detail;
+            $req->patient_province = $request->patient_province;
+            $req->countblood = $request->countblood;
+            $req->patient_hos = $request->patient_hos;
+            $req->patient_hos_la = $request->patient_la;
+            $req->patient_hos_long = $request->patient_long;
+
+            $req->save();
+            return "Request Success  : <br />".$req;
+        }elseif($check->patient_status == "not complete"){
+            return "patient same";
+        }
 
 
-      return "Request Success  : <br />".$req;
     }
 
     /**

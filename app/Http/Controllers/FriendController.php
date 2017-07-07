@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
+use App\User;
+use JWTAuth;
 
 class FriendController extends Controller
 {
@@ -34,7 +37,19 @@ class FriendController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = array('22222222','33333333','44444444','55555555','656656','121212');
+        foreach ($data as $key) {
+            $req = DB::table('users')
+                        ->select('name','phone')
+                        ->where('phone', '=', $key)
+                        ->get();
+            if($req != " "){
+                $arr[] = $req;
+            }
+
+        }
+        return $arr;
+
     }
 
     /**
