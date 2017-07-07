@@ -56,13 +56,6 @@ class RoomreqController extends Controller
             return $validator->messages();
         }
 
-        //check same data ( patient_id, patient_hos, patient_province )
-        // $check = DB::table('roomreqs')->where([
-        //         ['patient_id',$request->patient_id],
-        //         ['patient_hos',$request->patient_hos],
-        //         ['patient_province',$request->patient_province]
-        //     ]);
-
         $check = Roomreq::where([
                 ['patient_id',$request->patient_id],
                 ['patient_hos',$request->patient_hos],
@@ -86,7 +79,7 @@ class RoomreqController extends Controller
             $req->patient_hos_long = $request->patient_long;
 
             $req->save();
-            return "Request Success  : <br />".$req;
+            return "Request Success  : ".$req;
         }elseif($check->patient_status == "not complete"){
             return "patient same";
         }

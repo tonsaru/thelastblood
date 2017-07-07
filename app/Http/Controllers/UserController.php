@@ -9,7 +9,7 @@ use Dingo\Api\Routing\Helpers;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
-
+use Validator;
 
 class UserController extends Controller
 {
@@ -18,6 +18,20 @@ class UserController extends Controller
     public function index(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         return $currentUser;
+    }
+
+    //Check Register
+    public function check(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:191|Alpha|unique:users',
+            'email' => 'required|string|email|max:191|unique:users',
+            'phone' => 'required|string|max:10|unique:users',
+       ]);
+       if ($validator->fails()) {
+        //    return $validator->errors()->toArray();
+            return $validator->messages();
+            // return $validator->errors()->all();
+       }
     }
 
     public function showDonate(){
