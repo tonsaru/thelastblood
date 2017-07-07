@@ -3174,6 +3174,7 @@ return array(
     'Tymon\\JWTAuth\\Validators\\TokenValidator' => $vendorDir . '/tymon/jwt-auth/src/Validators/TokenValidator.php',
     'Tymon\\JWTAuth\\Validators\\ValidatorInterface' => $vendorDir . '/tymon/jwt-auth/src/Validators/ValidatorInterface.php',
     'UpdateRoomreq' => $baseDir . '/database/migrations/2017_07_05_094847_update_roomreq.php',
+    'UpdateRoomreq2' => $baseDir . '/database/migrations/2017_07_07_061905_update_roomreq_2.php',
     'Webmozart\\Assert\\Assert' => $vendorDir . '/webmozart/assert/src/Assert.php',
     'XdgBaseDir\\Xdg' => $vendorDir . '/dnoegel/php-xdg-base-dir/src/Xdg.php',
     'phpDocumentor\\Reflection\\DocBlock' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlock.php',

@@ -27,8 +27,8 @@ class CreateRoomreq extends Migration
                  $table->string('patient_detail');
                  $table->string('patient_province');
                  $table->string('patient_hos');
-                 $table->string('patient_hos_la');
-                 $table->string('patient_hos_long');
+                 $table->string('patient_hos_la')->defalut('0');
+                 $table->string('patient_hos_long')->defalut('0');
                  $table->string('patient_thankyou')->nullable();
                  $table->integer('countblood');
                  $table->integer('count_refresh')->default(1);
