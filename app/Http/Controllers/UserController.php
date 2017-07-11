@@ -7,9 +7,10 @@ use App\User;
 use DB;
 use Dingo\Api\Routing\Helpers;
 use Illuminate\Http\Request;
-use JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use Image;
+use JWTAuth;
 
 class UserController extends Controller
 {
@@ -21,7 +22,7 @@ class UserController extends Controller
     }
 
     public function edit(Request $request){
-        $currentUser = JWT::parseToken()->authenticate();
+        $currentUser = JWTAuth::parseToken()->authenticate();
         $data = User::find($currentUser->id);
         $data->email = $request->email;
         $data->blood = $request->blood;
@@ -34,6 +35,32 @@ class UserController extends Controller
         $data->img = $request->img;
         $data->save();
         return "Updata profile success";
+    }
+
+    public function update_avatar(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'photo' => 'required|image|mimes:jpeg,bmp,png,jpg|max:2048',
+       ],[
+           'photo.max' => 'image size max to 2 mb',
+       ]);
+
+        if ($validator->fails()) {
+             return $validator->messages();
+        }else{}
+            $path = $request->file('photo');
+                    // return $path;
+            // getClientOriginalExtension() return name file
+            $filename = time() . '.' . $path->getClientOriginalExtension();
+                    // return $filename;
+            $img = Image::make($path);
+            //quality image 60%
+            $img->save( public_path('/uploads/avatars/' . $filename ), 60);
+                    // return $img;
+            $user = Auth::user();
+        		$user->img = $filename;
+        		$user->save();
+
+            return "Upload profile success, Image name : ".$filename;
     }
 
     public function showDonate(){

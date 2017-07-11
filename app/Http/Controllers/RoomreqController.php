@@ -24,7 +24,7 @@ class RoomreqController extends Controller
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $req = DB::table('roomreqs')->select('user_id','id','created_at','updated_at','patient_name','patient_hos','patient_blood','patient_blood_type','patient_status')->where('user_id',$currentUser->id)->get();
+        $req = DB::table('roomreqs')->select('user_id','id','created_at','updated_at','patient_name','patient_hos','patient_blood','patient_blood_type','patient_status')->where('user_id',$currentUser->id)->orderBy('updated_at', 'desc')->get();
 
         return response()->json($req);
     }

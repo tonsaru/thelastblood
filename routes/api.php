@@ -35,7 +35,7 @@ $api->version('v1', function (Router $api) {
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
         $api->get('swap', 'App\\Http\\Controllers\\UserController@swapstatus');
         $api->post('edit','App\\Http\\Controllers\\UserController@edit');
-        $api->post('pic','App\\Http\\Controllers\\UserController@pic');
+        $api->post('avatar','App\\Http\\Controllers\\UserController@update_avatar');
 
         $api->resource('req','App\\Http\\Controllers\\RoomreqController');
         $api->post('req/detail','App\\Http\\Controllers\\RoomreqController@show');
