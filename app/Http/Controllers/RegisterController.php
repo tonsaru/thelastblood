@@ -23,7 +23,6 @@ class RegisterController extends Controller
         //    return $validator->errors()->toArray();
             return $validator->messages();
             // return $validator->errors()->all();
-
        }
         $user = new User($request->all());
         if(!$user->save()) {

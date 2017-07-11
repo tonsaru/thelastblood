@@ -20,6 +20,22 @@ class UserController extends Controller
         return $currentUser;
     }
 
+    public function edit(Request $request){
+        $currentUser = JWT::parseToken()->authenticate();
+        $data = User::find($currentUser->id);
+        $data->email = $request->email;
+        $data->blood = $request->blood;
+        $data->blood_type = $request->blood_type;
+        $data->birthyear = $request->birthyear;
+        $data->firstname = $request->firstname;
+        $data->lastname = $request->lastname;
+        $data->province = $request->province;
+        $data->countblood = $request->countblood;
+        $data->img = $request->img;
+        $data->save();
+        return "Updata profile success";
+    }
+
     public function showDonate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $dona = DB::table('roomdonates')->select('id','roomreq_id','user_id','status')->where('user_id',$currentUser->id)->get();
