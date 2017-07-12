@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Roomdonate;
+use App\Roomreq;
 use App\User;
 use DB;
 use JWTAuth;
-use App\Roomreq;
 
 class RoomdonateController extends Controller
 {
@@ -22,17 +22,19 @@ class RoomdonateController extends Controller
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        // if($currentUser->status == "ready"){
+        $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+        if($currentUser->status == "ready"){
             $req = DB::table('roomreqs')
                 ->select('user_id','id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos','patient_status')
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
+                ->whereNotIn('id', $check)
                 ->get();
             $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate);
             return $data;
-        // }
-        // return "you not ready plz check status or waiting time";
+        }
+        return "you not ready plz check status or waiting time";
     }
 
     /**
