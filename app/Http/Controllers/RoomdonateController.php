@@ -33,9 +33,12 @@ class RoomdonateController extends Controller
                 ->get();
             $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
             return $data;
+        }else{
+            $req = null;
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
+            return $data;
         }
-        $data = array('last_date_donate' => $currentUser->last_date_donate, 'status' => $currentUser->status,'img' => $currentUser->img);
-        return $data;
+
     }
 
     /**
