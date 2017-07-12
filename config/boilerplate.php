@@ -6,7 +6,6 @@ return [
         'release_token' => env('SIGN_UP_RELEASE_TOKEN'),
         'validation_rules' => [
           'name' => 'required|string|max:191|Alpha|unique:users',
-          'blood' => 'required|string|max:2',
           'email' => 'required|string|email|max:191|unique:users',
           'password' => 'required|string|min:6|confirmed',
           'blood' => 'required|string|max:2',
@@ -77,5 +76,32 @@ return [
             'password' => 'required'
         ]
     ],
+
+    'edit' => [
+        'release_token' => env('SIGN_UP_RELEASE_TOKEN'),
+        'validation_rules' => [
+          'email' => 'required|string|email|max:191|unique:users',
+          'blood' => 'required|string|max:2',
+          'blood_type' => 'required|string|max:8',
+          'birthyear' => 'required|integer|max:3000',
+          'province' => 'required|string|max:255',
+        ],
+        'message' => [
+            'name.required' => 'A name is required',
+            'email.required'  => 'A email is required',
+            'name.unique' => 'name unique',
+            'email.unique' => 'email unique'
+        ]
+    ],
+
+    'edit_avatar' => [
+        'validation_rules' => [
+            'photo' => 'required|image|mimes:jpeg,bmp,png,jpg|max:2048',
+        ],
+        'message' => [
+            'photo.max' => 'image size max to 2 mb',
+        ]
+    ],
+
 
 ];

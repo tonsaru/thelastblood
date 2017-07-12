@@ -27,6 +27,7 @@ class RoomdonateController extends Controller
                 ->select('user_id','id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos','patient_status')
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
+                ->where('patient_province', $currentUser->province)
                 ->get();
                 return $req;
         }

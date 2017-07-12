@@ -23,19 +23,20 @@ $api = app(Router::class);
 $api->version('v1', function (Router $api) {
 
     $api->group(['prefix' => 'auth'], function(Router $api) {
-        $api->post('register', 'App\\Http\\Controllers\\RegisterController@signUp');
         $api->post('login', 'App\\Http\\Controllers\\LoginController@login');
         $api->post('check', 'App\\Http\\Controllers\\RegisterController@check');
         $api->post('pim', 'App\\Http\\Controllers\\RegisterController@pim');
+        $api->post('register', 'App\\Http\\Controllers\\RegisterController@signUp');
     });
 
     $api->group(['middleware' => ['api.auth', 'jwt.auth']], function (Router $api) {
 
+        $api->post('avatar','App\\Http\\Controllers\\UserController@update_avatar');
+        $api->post('edit','App\\Http\\Controllers\\UserController@edit');
         $api->get('index', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
+        $api->post('settime','App\\Http\\Controllers\\UserController@setTime');
         $api->get('swap', 'App\\Http\\Controllers\\UserController@swapstatus');
-        $api->post('edit','App\\Http\\Controllers\\UserController@edit');
-        $api->post('avatar','App\\Http\\Controllers\\UserController@update_avatar');
 
         $api->resource('req','App\\Http\\Controllers\\RoomreqController');
         $api->post('req/detail','App\\Http\\Controllers\\RoomreqController@show');

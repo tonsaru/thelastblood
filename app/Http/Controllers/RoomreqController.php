@@ -125,6 +125,7 @@ class RoomreqController extends Controller
         }
 
         $update->count_refresh =$update->count_refresh+1;
+        $update->countblood = $request->countblood;
         $update->save();
 
         return "Refresh Succesful  <br />UserID: ".$update->user_id."<br />RoomID : ".$update->id."<br />CountRefresh = ".$update->count_refresh;

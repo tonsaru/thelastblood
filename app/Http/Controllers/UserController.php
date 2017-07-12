@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Image;
 use JWTAuth;
+use Config;
 
 class UserController extends Controller
 {
@@ -24,45 +25,47 @@ class UserController extends Controller
     public function edit(Request $request){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $data = User::find($currentUser->id);
+        $data->blood = strtolower($request->blood);
+        $data->blood_type = strtolower($request->blood_type);
         $data->email = $request->email;
-        $data->blood = $request->blood;
-        $data->blood_type = $request->blood_type;
         $data->birthyear = $request->birthyear;
-        $data->firstname = $request->firstname;
-        $data->lastname = $request->lastname;
         $data->province = $request->province;
-        $data->countblood = $request->countblood;
-        $data->img = $request->img;
         $data->save();
         return "Updata profile success";
     }
 
+    // input image file name photo
     public function update_avatar(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'photo' => 'required|image|mimes:jpeg,bmp,png,jpg|max:2048',
-       ],[
-           'photo.max' => 'image size max to 2 mb',
-       ]);
+        $validator = Validator::make($request->all(),
+                      Config::get('boilerplate.edit_avatar.validation_rules'),
+                      Config::get('boilerplate.edit_avatar.message'));
 
-        if ($validator->fails()) {
-             return $validator->messages();
-        }else{}
-            $path = $request->file('photo');
-                    // return $path;
-            // getClientOriginalExtension() return name file
-            $filename = time() . '.' . $path->getClientOriginalExtension();
-                    // return $filename;
-            $img = Image::make($path);
-            //quality image 60%
-            $img->save( public_path('/uploads/avatars/' . $filename ), 60);
-                    // return $img;
-            $user = Auth::user();
-        		$user->img = $filename;
-        		$user->save();
+         if ($validator->fails()) {
+              return $validator->messages();
+         }else{
+             $path = $request->file('photo');
+             // getClientOriginalExtension() return name file
+             $filename = time() . '.' . $path->getClientOriginalExtension();
+             $img = Image::make($path);
+             //quality image 60%
+             $img->save( public_path('/uploads/avatars/' . $filename ), 60);
+             $user = Auth::user();
+                 $user->img = $filename;
+                 $user->save();
 
-            return "Upload profile success, Image name : ".$filename;
+             return "Upload profile success, Image name : ".$filename;
+         }
     }
 
+    public function setTime(Request $request){
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        $data = User::find($currentUser->id);
+        $data->last_date_donate = $request->last_date_donate;
+        $data->save();
+        return "Set last_date_donate time : ".$data->last_date_donate;
+    }
+
+    // input last_date_donate type timestamp
     public function showDonate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $dona = DB::table('roomdonates')->select('id','roomreq_id','user_id','status')->where('user_id',$currentUser->id)->get();
