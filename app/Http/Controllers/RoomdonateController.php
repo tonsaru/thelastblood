@@ -29,7 +29,8 @@ class RoomdonateController extends Controller
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
                 ->get();
-                return $req;
+            $data = array($req, $currentUser->last_date_donate);
+            return $data;
         }
         return "you not ready plz check status or waiting time";
     }
@@ -63,7 +64,6 @@ class RoomdonateController extends Controller
                 return "Hello myself";
             }
 
-
             $update->countblood = $update->countblood-1;
             // return $update;
             $update->save();
@@ -73,8 +73,6 @@ class RoomdonateController extends Controller
             $dona->user_id = $currentUser->id;
             $dona->status = $request->status;
             $dona->save();
-
-
 
             $currentUser->status='unready';
             $currentUser->save();

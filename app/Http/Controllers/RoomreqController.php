@@ -112,7 +112,7 @@ class RoomreqController extends Controller
         return $req;
     }
 
-    //input roomreq_id
+    //input roomreq_id,countblood
     public function refresh(Request $request){
 
         $currentUser = JWTAuth::parseToken()->authenticate();
@@ -131,7 +131,7 @@ class RoomreqController extends Controller
         return "Refresh Succesful  <br />UserID: ".$update->user_id."<br />RoomID : ".$update->id."<br />CountRefresh = ".$update->count_refresh;
     }
 
-    // input roomreqID
+    // input roomreq_id, thankyou
     public function thankyou(Request $request){
 
         $currentUser = JWTAuth::parseToken()->authenticate();
