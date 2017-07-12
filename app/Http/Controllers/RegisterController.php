@@ -31,10 +31,11 @@ class RegisterController extends Controller
         $user->blood = strtolower($request->blood);
         $user->blood_type = strtolower($request->blood_type);
         $user->email = $request->email;
+        $user->phone = $request->phone;
         $user->birthyear = $request->birthyear;
         $user->province = $request->province;
         $user->firstname = strtolower($request->firstname);
-        $user->last_name = strtolower($request->last_name);
+        $user->lastname = strtolower($request->lastname);
         $user->save();
         if(!$user->save()) {
             throw new HttpException(500);

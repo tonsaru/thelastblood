@@ -81,6 +81,7 @@ class RoomdonateController extends Controller
             $dona->save();
 
             $currentUser->status='unready';
+            $currentUser->last_date_donate = $currentUser->updated_at;
             $currentUser->save();
 
             return "You donate blood to ".$update->patient_name.' Your Status is '.$currentUser->status." Roomreq blood remaining : ".$update->countblood;
