@@ -22,17 +22,17 @@ class RoomdonateController extends Controller
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        if($currentUser->status == "ready"){
+        // if($currentUser->status == "ready"){
             $req = DB::table('roomreqs')
                 ->select('user_id','id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos','patient_status')
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
                 ->get();
-            $data = array($req, $currentUser->last_date_donate);
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate);
             return $data;
-        }
-        return "you not ready plz check status or waiting time";
+        // }
+        // return "you not ready plz check status or waiting time";
     }
 
     /**
