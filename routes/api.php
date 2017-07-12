@@ -44,6 +44,7 @@ $api->version('v1', function (Router $api) {
         $api->post('req/success','App\\Http\\Controllers\\RoomreqController@status_suc');
         $api->post('req/thankyou','App\\Http\\Controllers\\RoomreqController@thankyou');
 
+        $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@show');
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
 
         $api->resource('friend','App\\Http\\Controllers\\FriendController');

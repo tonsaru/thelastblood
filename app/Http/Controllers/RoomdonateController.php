@@ -25,13 +25,13 @@ class RoomdonateController extends Controller
         $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
         if($currentUser->status == "ready"){
             $req = DB::table('roomreqs')
-                ->select('user_id','id','patient_name','patient_blood','patient_blood_type','patient_province','patient_hos','patient_status')
+                ->select('user_id','id','patient_name','patient_blood','patient_blood_type')
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
                 ->whereNotIn('id', $check)
                 ->get();
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate);
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img);
             return $data;
         }
         return "you not ready plz check status or waiting time";
@@ -90,9 +90,21 @@ class RoomdonateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    //  input roomreq_id
+    public function show(Request $request)
     {
-        //
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        //check ว่าเข้าได้เฉพาะของที่ตัวเองมี
+        $req = DB::table('roomreqs')
+            ->select('patient_name','patient_id','patient_blood','patient_blood_type','patient_detail','patient_province','patient_hos','patient_hos_la','patient_hos_long')
+            ->where([
+                ['id',$request->roomreq_id]
+            ])->get();
+
+        if($req->count() == 0){
+            return 'no data';
+        }
+        return $req;
     }
 
     /**
