@@ -31,7 +31,7 @@ class RoomdonateController extends Controller
                 ->where('patient_province', $currentUser->province)
                 ->whereNotIn('id', $check)
                 ->get();
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img);
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
             return $data;
         }
         return "you not ready plz check status or waiting time";
