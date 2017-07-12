@@ -24,7 +24,18 @@ class RegisterController extends Controller
             return $validator->messages();
             // return $validator->errors()->all();
        }
-        $user = new User($request->all());
+        // $user = new User($request->all());
+        $user = new User;
+        $user->name = strtolower($request->name);
+        $user->password = strtolower($request->password);
+        $user->blood = strtolower($request->blood);
+        $user->blood_type = strtolower($request->blood_type);
+        $user->blood = strtolower($request->blood);
+        $user->blood_type = strtolower($request->blood_type);
+        $user->email = $request->email;
+        $user->birthyear = $request->birthyear;
+        $user->province = $request->province;
+        $user->save();
         if(!$user->save()) {
             throw new HttpException(500);
         }
