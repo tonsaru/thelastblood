@@ -24,6 +24,6 @@ class LoginRequest extends FormRequest
      */
     public function rules()
     {
-        return Config::get('boilerplate.login.validation_rules_1');
+        return Config::get('boilerplate.login.validation_rules');
     }
 }

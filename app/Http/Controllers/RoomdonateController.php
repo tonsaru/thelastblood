@@ -40,7 +40,6 @@ class RoomdonateController extends Controller
             $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
             return $data;
         }
-
     }
 
     /**

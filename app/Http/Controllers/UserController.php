@@ -46,10 +46,11 @@ class UserController extends Controller
               return $validator->messages();
          }
         //  else{
-            //  $path = $request->file('photo');
+             $path = $request->file('photo');
             //  return $path;
              // getClientOriginalExtension() return name file
             //  $filename = time() . '.' . $path->getClientOriginalExtension();
+            //  return $filename;
             //  return public_path('/uploads/avatars/');
             //  $img = Image::make($path);
             //  return $img;
@@ -62,11 +63,26 @@ class UserController extends Controller
             $photo = $request->file('photo');
     		$extension = $photo->getClientOriginalExtension();
             $filename = time() . '.' . $extension;
-    		Storage::disk('avatars')->put($filename.'.'.$extension,  File::get($photo));
-
+    		Storage::disk('public_avatar')->put($filename, File::get($photo));
+	        // Storage::disk('public_avatar')->put($filename, $path);
             $data = User::find($currentUser->id);
             $data->img = $filename;
             $data->save();
+
+
+            // $extension = $path->getClientOriginalExtension();
+            //
+            // // returns Intervention\Image\Image
+            // $resize = Image::make($path);
+            // // calculate md5 hash of encoded image
+            // $hash = md5($resize->__toString());
+            //
+            // // use hash as a name
+            // $path = "uploads/avatars/{$hash}.jpg";
+            //
+            // // save it locally to ~/public/uploads/avatars/{$hash}.jpg
+            // $resize->save(public_path($path));
+            // $filename = $hash.'.'.$extension;
 
 
              return "Upload profile success, Image name : ".$filename;
