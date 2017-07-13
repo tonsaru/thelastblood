@@ -42,11 +42,15 @@ class UserController extends Controller
 
          if ($validator->fails()) {
               return $validator->messages();
-         }else{
+         }
+        //  else{
              $path = $request->file('photo');
+             return $path;
              // getClientOriginalExtension() return name file
              $filename = time() . '.' . $path->getClientOriginalExtension();
+             return public_path('/uploads/avatars/');
              $img = Image::make($path);
+             return $img;
              //quality image 60%
              $img->save( public_path('/uploads/avatars/' . $filename ), 60);
              $user = Auth::user();
@@ -54,7 +58,7 @@ class UserController extends Controller
                  $user->save();
 
              return "Upload profile success, Image name : ".$filename;
-         }
+        //  }
     }
 
     public function setTime(Request $request){

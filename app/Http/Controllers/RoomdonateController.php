@@ -23,13 +23,15 @@ class RoomdonateController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
         $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+
         if($currentUser->status == "ready"){
             $req = DB::table('roomreqs')
-                ->select('user_id','id','patient_name','patient_blood','patient_blood_type')
+                ->join('users', 'users.id', '=', 'roomreqs.user_id')
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
-                ->whereNotIn('id', $check)
+                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type')
+                ->whereNotIn('roomreqs.id', $check)
                 ->get();
             $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
             return $data;

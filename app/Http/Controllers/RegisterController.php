@@ -36,16 +36,17 @@ class RegisterController extends Controller
         $user->province = $request->province;
         $user->firstname = strtolower($request->firstname);
         $user->lastname = strtolower($request->lastname);
+        $user->last_date_donate = $request->last_date_donate;
         $user->save();
         if(!$user->save()) {
             throw new HttpException(500);
         }
-
-        if(!Config::get('boilerplate.sign_up.release_token')) {
-            return response()->json([
-                'status' => 'ok'
-            ], 201);
-        }
+        
+        // if(!Config::get('boilerplate.sign_up.release_token')) {
+        //     return response()->json([
+        //         'status' => 'ok'
+        //     ], 201);
+        // }
 
         $token = $JWTAuth->fromUser($user);
         return response()->json([

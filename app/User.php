@@ -5,6 +5,7 @@ namespace App;
 use Hash;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Roomreq;
 
 class User extends Authenticatable
 {
@@ -38,4 +39,5 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = Hash::make($value);
     }
+
 }

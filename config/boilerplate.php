@@ -26,8 +26,11 @@ return [
     ],
 
     'login' => [
-        'validation_rules' => [
-            'email' => 'required|email',
+        'validation_rules_1' => [
+            'name' => 'required',
+            'password' => 'required'
+        ],'validation_rules_2' => [
+            'phone' => 'required',
             'password' => 'required'
         ]
     ],
