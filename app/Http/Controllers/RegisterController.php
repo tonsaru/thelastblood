@@ -68,6 +68,7 @@ class RegisterController extends Controller
               return $validator->messages();
               // return $validator->errors()->all();
          }
+         return "ok";
       }
 
       public function pim(Request $request){
