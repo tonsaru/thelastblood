@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Config;
 use App\User;
-use Tymon\JWTAuth\JWTAuth;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Validator;
+use Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tymon\JWTAuth\JWTAuth;
+use Validator;
+
 
 class RegisterController extends Controller
 {
@@ -41,7 +42,7 @@ class RegisterController extends Controller
         if(!$user->save()) {
             throw new HttpException(500);
         }
-        
+
         // if(!Config::get('boilerplate.sign_up.release_token')) {
         //     return response()->json([
         //         'status' => 'ok'

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tymon\JWTAuth\JWTAuth;
 use App\Http\Requests\LoginRequest;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\JWTAuth;
 
 class LoginController extends Controller
 {

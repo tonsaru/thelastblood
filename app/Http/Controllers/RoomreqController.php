@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Validator;
-use App\User;
-use JWTAuth;
-use Config;
-use Dingo\Api\Routing\Helpers;
-use App\Roomreq;
-use DB;
 use App\Http\Controllers\Controller;
+use App\Roomreq;
+use App\User;
+use Config;
+use DB;
+use Dingo\Api\Routing\Helpers;
+use Illuminate\Http\Request;
+use JWTAuth;
+use Validator;
 
 class RoomreqController extends Controller
 {

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use DB;
-use App\User;
-use JWTAuth;
 use App\Friend;
+use App\User;
+use DB;
+use Illuminate\Http\Request;
+use JWTAuth;
 
 class FriendController extends Controller
 {
@@ -107,7 +107,7 @@ class FriendController extends Controller
      */
     public function edit($id)
     {
-        
+
 
     }
 
