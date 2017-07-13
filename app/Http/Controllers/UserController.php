@@ -12,7 +12,8 @@ use Validator;
 use Image;
 use JWTAuth;
 use Config;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 class UserController extends Controller
 {
     use Helpers;
@@ -36,6 +37,7 @@ class UserController extends Controller
 
     // input image file name photo
     public function update_avatar(Request $request) {
+        $currentUser = JWTAuth::parseToken()->authenticate();
         $validator = Validator::make($request->all(),
                       Config::get('boilerplate.edit_avatar.validation_rules'),
                       Config::get('boilerplate.edit_avatar.message'));
@@ -44,18 +46,28 @@ class UserController extends Controller
               return $validator->messages();
          }
         //  else{
-             $path = $request->file('photo');
-             return $path;
+            //  $path = $request->file('photo');
+            //  return $path;
              // getClientOriginalExtension() return name file
-             $filename = time() . '.' . $path->getClientOriginalExtension();
-             return public_path('/uploads/avatars/');
-             $img = Image::make($path);
-             return $img;
+            //  $filename = time() . '.' . $path->getClientOriginalExtension();
+            //  return public_path('/uploads/avatars/');
+            //  $img = Image::make($path);
+            //  return $img;
              //quality image 60%
-             $img->save( public_path('/uploads/avatars/' . $filename ), 60);
-             $user = Auth::user();
-                 $user->img = $filename;
-                 $user->save();
+            //  $img->save( public_path('/uploads/avatars/' . $filename ), 60);
+            //  $user = Auth::user();
+                //  $user->img = $filename;
+                //  $user->save();
+
+            $photo = $request->file('photo');
+    		$extension = $photo->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+    		Storage::disk('avatars')->put($filename.'.'.$extension,  File::get($photo));
+
+            $data = User::find($currentUser->id);
+            $data->img = $filename;
+            $data->save();
+
 
              return "Upload profile success, Image name : ".$filename;
         //  }
