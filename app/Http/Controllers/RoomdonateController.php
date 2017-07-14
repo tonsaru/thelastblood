@@ -101,10 +101,13 @@ class RoomdonateController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
         //check ว่าเข้าได้เฉพาะของที่ตัวเองมี
-        $req = DB::table('roomreqs')
-            ->select('patient_name','patient_id','patient_blood','patient_blood_type','patient_detail','patient_province','patient_hos','patient_hos_la','patient_hos_long')
+        $req = DB::table('users')
+            ->join('roomreqs', 'roomreqs.user_id', '=', 'users.id')
+            ->join('roomdonates', 'roomdonates.roomreq_id', '=', 'roomreqs.id')
+            ->select('users.name','users.img','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_detail','roomreqs.patient_province','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long','roomreqs.patient_thankyou','roomdonates.created_at')
             ->where([
-                ['id',$request->roomreq_id]
+                ['roomreqs.id',$request->roomreq_id],
+                ['roomdonates.user_id', $currentUser->id]
             ])->get();
 
         if($req->count() == 0){
