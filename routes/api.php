@@ -36,6 +36,7 @@ $api->version('v1', function (Router $api) {
         $api->get('index', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
         $api->post('settime','App\\Http\\Controllers\\UserController@setTime');
+        $api->get('showdonate', 'App\\Http\\Controllers\\UserController@showDonate');
         $api->get('swap', 'App\\Http\\Controllers\\UserController@swapstatus');
 
         $api->resource('req','App\\Http\\Controllers\\RoomreqController');

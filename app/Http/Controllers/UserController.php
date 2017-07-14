@@ -96,10 +96,14 @@ class UserController extends Controller
         return "Set last_date_donate time : ".$data->last_date_donate;
     }
 
-    // input last_date_donate type timestamp
     public function showDonate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $dona = DB::table('roomdonates')->select('id','roomreq_id','user_id','status')->where('user_id',$currentUser->id)->get();
+        $dona = DB::table('roomdonates')
+                    ->select('id','roomreq_id','user_id','status')
+                    ->where([
+                        ['user_id',$currentUser->id],
+                        ['status' ,'accept']
+                    ])->get();
         return $dona;
     }
 
