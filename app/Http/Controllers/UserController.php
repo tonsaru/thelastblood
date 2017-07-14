@@ -99,10 +99,11 @@ class UserController extends Controller
     public function showDonate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $dona = DB::table('roomdonates')
-                    ->select('id','roomreq_id','user_id','status')
+                    ->select('roomdonates.roomreq_id','roomdonates.user_id','roomdonates.status','users.name','users.img')
+                    ->join('users', 'users.id', '=', 'roomdonates.user_id')
                     ->where([
-                        ['user_id',$currentUser->id],
-                        ['status' ,'accept']
+                        ['roomdonates.user_id',$currentUser->id],
+                        ['roomdonates.status' ,'accept']
                     ])->get();
         return $dona;
     }
