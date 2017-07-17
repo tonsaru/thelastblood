@@ -30,7 +30,7 @@ class RoomdonateController extends Controller
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
-                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type')
+                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','patient_province')
                 ->whereNotIn('roomreqs.id', $check)
                 ->get();
             $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
@@ -101,19 +101,36 @@ class RoomdonateController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
         //check ว่าเข้าได้เฉพาะของที่ตัวเองมี
-        $req = DB::table('users')
-            ->join('roomreqs', 'roomreqs.user_id', '=', 'users.id')
-            ->join('roomdonates', 'roomdonates.roomreq_id', '=', 'roomreqs.id')
-            ->select('users.name','users.img','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_detail','roomreqs.patient_province','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long','roomreqs.patient_thankyou','roomdonates.created_at')
-            ->where([
-                ['roomreqs.id',$request->roomreq_id],
-                ['roomdonates.user_id', $currentUser->id]
-            ])->get();
+        // $req = DB::table('users')
+        //     ->join('roomreqs', 'roomreqs.user_id', '=', 'users.id')
+        //     ->join('roomdonates', 'roomdonates.roomreq_id', '=', 'roomreqs.id')
+        //     ->select('users.name','users.img','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_detail','roomreqs.patient_province','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long','roomreqs.patient_thankyou','roomdonates.created_at')
+        //     ->where([
+        //         ['roomreqs.id',$request->roomreq_id],
+        //         ['roomdonates.user_id', $currentUser->id]
+        //     ])->get();
+        //
+        // if($req->count() == 0){
+        //     return 'no data';
+        // }
+        // return $req;
 
-        if($req->count() == 0){
-            return 'no data';
+        $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+        if($currentUser->status == "ready"){
+            $req = DB::table('roomreqs')
+                ->join('users', 'users.id', '=', 'roomreqs.user_id')
+                ->where('user_id', '!=', $currentUser->id)
+                ->where('patient_status', '!=', 'complete')
+                ->where('patient_province', $currentUser->province)
+                ->where('roomreqs.id',$request->roomreq_id)
+                ->select('roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_province','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_detail','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long')
+                ->whereNotIn('roomreqs.id', $check)
+                ->get();
+            return $req;
+        }else{
+            return "no data";
         }
-        return $req;
+
     }
 
     /**

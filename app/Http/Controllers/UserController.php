@@ -96,7 +96,7 @@ class UserController extends Controller
         return "Set last_date_donate time : ".$data->last_date_donate;
     }
 
-    public function showDonate(){
+    public function donate(){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $dona = DB::table('roomdonates')
                     ->select('roomdonates.roomreq_id','roomdonates.user_id','roomdonates.status','roomreqs.user_id','users.name','users.img')
@@ -109,17 +109,31 @@ class UserController extends Controller
         return $dona;
     }
 
+    public function donate_detail(Request $request){
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        $dona = DB::table('roomdonates')
+                    ->select('roomdonates.roomreq_id','roomdonates.user_id','roomdonates.status','roomreqs.user_id','users.name','users.img','roomreqs.patient_id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_province','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long','roomreqs.patient_thankyou','roomdonates.created_at')
+                    ->join('roomreqs', 'roomreqs.id', '=', 'roomdonates.roomreq_id')
+                    ->join('users', 'users.id', '=', 'roomreqs.user_id')
+                    ->where([
+                        ['roomdonates.user_id',$currentUser->id],
+                        ['roomdonates.status' ,'accept'],
+                        ['roomdonates.roomreq_id',$request->roomreq_id]
+                    ])->get();
+        return $dona;
+    }
+
     //swap ready,unready
     public function swapstatus(){
-      $currentUser = JWTAuth::parseToken()->authenticate();
-      if($currentUser->status =='unready'){
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        if($currentUser->status =='unready'){
           $currentUser->status = "ready";
           $currentUser->save();
-      }else{
+        }else{
           $currentUser->status='unready';
           $currentUser->save();
-      }
-      return $currentUser->name.". Statuts is ".$currentUser->status;
+        }
+        return $currentUser->name.". Statuts is ".$currentUser->status;
     }
 
     public function logout(){

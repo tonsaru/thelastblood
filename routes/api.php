@@ -31,13 +31,14 @@ $api->version('v1', function (Router $api) {
 
     $api->group(['middleware' => ['api.auth', 'jwt.auth']], function (Router $api) {
 
-        $api->post('avatar','App\\Http\\Controllers\\UserController@update_avatar');
-        $api->post('edit','App\\Http\\Controllers\\UserController@edit');
-        $api->get('index', 'App\\Http\\Controllers\\UserController@index');
+        $api->get('user', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
-        $api->post('settime','App\\Http\\Controllers\\UserController@setTime');
-        $api->get('showdonate', 'App\\Http\\Controllers\\UserController@showDonate');
-        $api->get('swap', 'App\\Http\\Controllers\\UserController@swapstatus');
+        $api->get('user/donate', 'App\\Http\\Controllers\\UserController@donate');
+        $api->get('user/swap', 'App\\Http\\Controllers\\UserController@swapstatus');
+        $api->post('user/avatar','App\\Http\\Controllers\\UserController@update_avatar');
+        $api->post('user/donate/detail', 'App\\Http\\Controllers\\UserController@donate_detail');
+        $api->post('user/edit','App\\Http\\Controllers\\UserController@edit');
+        $api->post('user/settime','App\\Http\\Controllers\\UserController@setTime');
 
         $api->resource('req','App\\Http\\Controllers\\RoomreqController');
         $api->post('req/detail','App\\Http\\Controllers\\RoomreqController@show');
@@ -45,11 +46,10 @@ $api->version('v1', function (Router $api) {
         $api->post('req/success','App\\Http\\Controllers\\RoomreqController@status_suc');
         $api->post('req/thankyou','App\\Http\\Controllers\\RoomreqController@thankyou');
 
-        $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@show');
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
+        $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@show');
 
-        $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
         $api->resource('friend','App\\Http\\Controllers\\FriendController');
+        $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
     });
-
 });

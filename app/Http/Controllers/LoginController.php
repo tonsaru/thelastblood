@@ -19,7 +19,7 @@ class LoginController extends Controller
         try {
             $token = $JWTAuth->attempt($credentials);
             if($token == null){
-                $phone = $request->name;
+                $phone = strtolower($request->name);
                 $credentials = array('phone' => $phone ,'password' => $request->password);
                 $token = $JWTAuth->attempt($credentials);
             }
