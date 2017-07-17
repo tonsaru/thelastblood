@@ -27,8 +27,8 @@ class UserController extends Controller
     public function edit(Request $request){
         $currentUser = JWTAuth::parseToken()->authenticate();
         $data = User::find($currentUser->id);
-        $data->blood = strtolower($request->blood);
-        $data->blood_type = strtolower($request->blood_type);
+        $data->blood = strtoupper($request->blood);
+        $data->blood_type = strtoupper($request->blood_type);
         $data->email = $request->email;
         $data->birthyear = $request->birthyear;
         $data->province = $request->province;

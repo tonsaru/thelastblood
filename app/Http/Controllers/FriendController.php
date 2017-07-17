@@ -32,9 +32,14 @@ class FriendController extends Controller
         $data = DB::table('friends')
                     ->join('users', 'friends.friend_id', '=', 'users.id')
                     ->select('friends.user_id','friends.friend_id','users.name','users.phone','users.status','users.blood','users.blood_type','users.img')
-                    ->where('user_id',$currentUser->id)
-                    ->where('users.blood',$request->blood)
-                    ->get();
+                    ->where('user_id',$currentUser->id);
+        if($request->blood == 'all'){
+            $check = array('a','b','o','ab');
+            $data = $data->whereIn('users.blood',$check)->get();
+        } else{
+            $data = $data->where('users.blood',$request->blood)->get();
+        }
+
         return $data;
     }
 
