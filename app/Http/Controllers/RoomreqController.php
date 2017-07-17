@@ -186,9 +186,10 @@ class RoomreqController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $edit = Item::find($request->id)->update($request->all());
+        return response()->json($edit);
     }
 
     /**
@@ -200,5 +201,17 @@ class RoomreqController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function admin_index(){
+      $roomreqs = Roomreq::all();
+      // show data to our view
+      return view('Roomreq.index',['roomreqs' => $roomreqs]);
+    }
+
+    public function admin_index2(){
+      $roomreqs = Roomreq::all();
+      // show data to our view
+      return view('Roomreq.index2',['roomreqs' => $roomreqs]);
     }
 }

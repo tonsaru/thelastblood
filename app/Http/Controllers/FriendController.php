@@ -18,10 +18,23 @@ class FriendController extends Controller
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $data = DB::select('SELECT friends.user_id,friends.friend_id,users.name,users.phone,users.status,users.blood,users.blood_type,users.img
-                            FROM `friends`,`users`
-                            WHERE (users.id = friends.friend_id) && (user_id = :id)',
-                            ['id' => $currentUser->id]);
+        $data = DB::table('friends')
+                    ->join('users', 'friends.friend_id', '=', 'users.id')
+                    ->select('friends.user_id','friends.friend_id','users.name','users.phone','users.status','users.blood','users.blood_type','users.img')
+                    ->where('user_id',$currentUser->id )
+                    ->get();
+        return $data;
+    }
+
+    public function indexGroup(Request $request)
+    {
+        $currentUser = JWTAuth::parseToken()->authenticate();
+        $data = DB::table('friends')
+                    ->join('users', 'friends.friend_id', '=', 'users.id')
+                    ->select('friends.user_id','friends.friend_id','users.name','users.phone','users.status','users.blood','users.blood_type','users.img')
+                    ->where('user_id',$currentUser->id)
+                    ->where('users.blood',$request->blood)
+                    ->get();
         return $data;
     }
 
@@ -52,6 +65,7 @@ class FriendController extends Controller
             $req = DB::table('users')
                         ->select('id')
                         ->where('phone', '=', $key)
+                        ->where('id','!=',$currentUser->id)
                         ->first();
             if($req != null){
                 $arr[] = $req;
@@ -83,6 +97,12 @@ class FriendController extends Controller
             $req = new Friend;
             $req->user_id = $currentUser->id;
             $req->friend_id = $value;
+            $req->save();
+        }
+        foreach ($newarr as $key => $value) {
+            $req = new Friend;
+            $req->user_id = $value;
+            $req->friend_id = $currentUser->id;
             $req->save();
         }
         return "Request Success  : ".$req;
