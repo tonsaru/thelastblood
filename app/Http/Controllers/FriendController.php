@@ -33,8 +33,8 @@ class FriendController extends Controller
                     ->join('users', 'friends.friend_id', '=', 'users.id')
                     ->select('friends.user_id','friends.friend_id','users.name','users.phone','users.status','users.blood','users.blood_type','users.img')
                     ->where('user_id',$currentUser->id);
-        if($request->blood == 'all'){
-            $check = array('a','b','o','ab');
+        if($request->blood == 'ALL'){
+            $check = array('A','B','O','AB');
             $data = $data->whereIn('users.blood',$check)->get();
         } else{
             $data = $data->where('users.blood',$request->blood)->get();
