@@ -30,14 +30,14 @@ class RoomdonateController extends Controller
                 ->where('user_id', '!=', $currentUser->id)
                 ->where('patient_status', '!=', 'complete')
                 ->where('patient_province', $currentUser->province)
-                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','patient_province')
+                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','patient_province','users.img')
                 ->whereNotIn('roomreqs.id', $check)
                 ->get();
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'status'=>$currentUser->status);
             return $data;
         }else{
             $req = null;
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'img' => $currentUser->img,'status'=>$currentUser->status);
+            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'status'=>$currentUser->status);
             return $data;
         }
     }
