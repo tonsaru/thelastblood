@@ -31,6 +31,12 @@ $api->version('v1', function (Router $api) {
 
     $api->group(['middleware' => ['api.auth', 'jwt.auth']], function (Router $api) {
 
+        $api->get('ajax1', 'App\\Http\\Controllers\\TestController@ajax1');
+        $api->get('ajax2', 'App\\Http\\Controllers\\TestController@ajax2');
+        $api->get('ajax3', 'App\\Http\\Controllers\\TestController@ajax3');
+        $api->get('ajax4', 'App\\Http\\Controllers\\TestController@ajax4');
+        $api->get('f2', 'App\\Http\\Controllers\\TestController@f2');
+
         $api->get('user', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
         $api->get('user/donate', 'App\\Http\\Controllers\\UserController@donate');
@@ -51,5 +57,9 @@ $api->version('v1', function (Router $api) {
 
         $api->resource('friend','App\\Http\\Controllers\\FriendController');
         $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
+
+        $api->resource('ldonate','App\\Http\\Controllers\\ListdonateController');
+        $api->post('ldonate/data','App\\Http\\Controllers\\ListdonateController@datashow');
+        $api->post('ldonate/data2','App\\Http\\Controllers\\ListdonateController@datamod');
     });
 });
