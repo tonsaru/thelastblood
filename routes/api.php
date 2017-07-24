@@ -61,5 +61,8 @@ $api->version('v1', function (Router $api) {
         $api->resource('ldonate','App\\Http\\Controllers\\ListdonateController');
         $api->post('ldonate/data','App\\Http\\Controllers\\ListdonateController@datashow');
         $api->post('ldonate/data2','App\\Http\\Controllers\\ListdonateController@datamod');
+
+        $api->get('Rdonate/checkstatus','App\\Http\\Controllers\\ListroomController@checkstatus');
+        $api->get('Rdonate/checkstate','App\\Http\\Controllers\\ListroomController@checkstate');
     });
 });

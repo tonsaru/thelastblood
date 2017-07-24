@@ -100,18 +100,31 @@ class ListdonateController extends Controller
         // quey countblood ของห้อง roomreq_id นั้น
         $cblood = DB::table('roomreqs')->select('id','user_id','countblood')->where('id',$request->roomreq_id)->first();
         // return $cblood->countblood;
+        //last donate_list
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$request->roomreq_id)->max('donate_list');
         if($listnow == ''){
             $listnow = 0;
         }
         // return $listnow;
-        // qeury user ที่กำลังใช้งานอยู่ในจังหวัดนี้ที่ status = ready แล้วไม่ใช่ตัวเอง
+
+        //ดูข้อมูลก่อนหน้าว่ามีคนใช้คนนี้แล้วรึยัง โดยคิดจาก้ last DonateList ของแต่ละ Roomreq
+        $checkdata = DB::select('select distinct(user_id) as id
+                            From list_donates
+                            where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id  )');
+
+        //เก็บค่าของแต่ละคนเป็น array เพื่อเอาไป query user
+        $resultArray = json_decode(json_encode($checkdata), true);
+        // return var_dump($resultArray);
+
+        // qeury user ที่กำลังใช้งานอยู่ในจังหวัดนี้ที่ status = ready แล้วไม่ใช่ตัวเอง ต้องไม่ใช่คนที่อยู่ใน $resultArray( คนที่มีการส่งข้อมูลไปแล้ว )
         $data = DB::table('users')
-                    ->select('id','name','status')
-                    ->where('province',$request->province)
-                    ->where('id','!=',$currentUser->id)
-                    ->where('status','ready')
+                    ->select('id', 'name', 'status')
+                    ->where('province', $request->province)
+                    ->where('id', '!=', $currentUser->id)
+                    ->where('status', 'ready')
+                    ->whereNotIn('id', $resultArray)
                     ->get();
+        // return $data;
         if($data->count() == 0){
             return "no data"; //no updates
         }
