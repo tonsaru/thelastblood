@@ -78,40 +78,61 @@ class ListroomController extends Controller
     public function getstarted(){
         $lastreq = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
+        $cblood = $lastreq->countblood*10;
 
         if($lastno->no == ''){
             $lastno->no = 0;
         }
-        // return $lastreq->countblood*10;
+        // return $lastno->no;
         // return $allcount;
         // input roomreq_id, countblood
         $req1 = new ListDonateroom;
-        $req1->no = $lastno->no+1;
+        $req1->no = 0;
         $req1->roomreq_id = $lastreq->id;
-        // //เริ่มที่ 0 เพราะว่าตอนทำจะได้เป็นครั้งแรก จะได้ดูง่ายๆ
+        // เริ่มที่ 0 เพราะว่าตอนทำจะได้เป็นครั้งแรก จะได้ดูง่ายๆ
         $req1->donate_list = 0;
         $req1->add = 0;
         $req1->remaining = $lastreq->countblood*10;
         $req1->save();
-
-        $allcount = $this->Nreceived_count();
-        $remain = $allcount //ตัวที่เหลืออยู่
-        $cblood = $lastreq->countblood*10;
         //
-        if( $allcount < $cblood ) {
-            $this->manageblood_new($allcount);
-            $remain = $remain - $rand->InArea_count();
-            if( $cblood >= $rand->InArea_count() ){
-                $cblood = $cblood - $rand->InArea_count();
-                $rand->InArea_random( $lastreq->id, $cblood, $rand->InArea_count() );
-                if( $cblood > 0 ){
-                    if( $cblood > $rand->OtherArea_count() ){
-                        $cblood = $cblood - $rand->OtherArea_count();
-                        $rand->OtherArea_random( $lastreq->id,$cblood,$rand->OtherArea_count() );
+        $allcount = $this->Nreceived_count();
+        // $remain = $allcount //ตัวที่เหลืออยู่
+        // return $allcount;
 
-                        return "Fin In,Other Area Not Complete, Remaining : ".$cblood;
-                    }else{
-                        $rand->OtherArea_random( $lastreq->id, $cblood );
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
+        if($cblood >= $allcount){
+            $add = $allcount;
+            // return "asda";
+            $this->manageblood_new($add);
+        }else{
+
+            $add = $cblood;
+            // return "asada";
+            $this->manageblood_new($add);
+            // return "asada";
+            $all_remain = $allcount - $add;
+            // return "asada";
+            $this->manageblood_old($all_remain);
+        }
+        return "finish";
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        // if( $allcount < $cblood ) {
+        //     $this->manageblood_new($allcount);
+        //     $remain = $remain - $rand->InArea_count();
+        //     if( $cblood >= $rand->InArea_count() ){
+        //         $cblood = $cblood - $rand->InArea_count();
+        //         $rand->InArea_random( $lastreq->id, $cblood, $rand->InArea_count() );
+        //         if( $cblood > 0 ){
+        //             if( $cblood > $rand->OtherArea_count() ){
+        //                 $cblood = $cblood - $rand->OtherArea_count();
+        //                 $rand->OtherArea_random( $lastreq->id,$cblood,$rand->OtherArea_count() );
+        //
+        //                 return "Fin In,Other Area Not Complete, Remaining : ".$cblood;
+        //             }else{
+        //                 $rand->OtherArea_random( $lastreq->id, $cblood );
         //                 $status = 'complete';
         //                 return "Fin In,Other Area Complete";
         //             }
@@ -157,8 +178,10 @@ class ListroomController extends Controller
     }
 //สร้าง DonatelistRoom ของตัวล่าสุดครั้งแรก
     public function manageblood_new($person){
+        // return 'asda';
         $roomreq_new = $this->roomreq_new();
-        $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
+        // return 'asda';
+
         foreach ($roomreq_new as $key) {
             if($person >= $key['remaining'] && $person > 0){
                 $add = $key['remaining'];
@@ -187,8 +210,9 @@ class ListroomController extends Controller
         }
 
         // return $arr;
+        $lastno = DB::table('list_donaterooms')->where('roomreq_id',$arr[0]['roomreq_id'])->orderBy('no', 'desc')->first();
         $req = new ListDonateroom;
-        $req->no = $lastno+1;
+        $req->no = $lastno->no + 1;
         $req->roomreq_id = $arr[0]['roomreq_id'];
         $req->donate_list = $arr[0]['donate_list']+1;
         $req->add = $arr[0]['add'];
@@ -202,6 +226,7 @@ class ListroomController extends Controller
     //input person คนที่จะให้ทำงาน
     public function manageblood_old($person){
         $roomreq_old = $this->roomreq_old();
+        // return "asdad";
         foreach ($roomreq_old as $key) {
             if($person >= $key['remaining'] && $person > 0){
                 $add = $key['remaining'];
@@ -214,6 +239,7 @@ class ListroomController extends Controller
                             'list_status' => 'complete',
                             'all_remaining' => $person
                         ];
+
             }elseif($person > 0){
                 $add = $person;
                 $person -= $add;
@@ -225,18 +251,14 @@ class ListroomController extends Controller
                             'list_status' => 'not complete',
                             'all_remaining' => $person
                         ];
+
             }
         }
-        return $arr;
-        // return $roomreq_old[0]['status'];
-
-        //query max no
-        $no = DB::table('list_donaterooms')->select('no')->max('no');
-        // return $no;
-        //create
-        foreach ( $arr as $key) {
+        foreach ($arr as $key) {
+            //query max no
+            $checkno = DB::table('list_donaterooms')->where('roomreq_id', $key['roomreq_id']) ->orderBy('no', 'desc')->first();
               $req2 = new ListDonateroom;
-              $req2->no = $no;
+              $req2->no = $checkno->no+1;
               $req2->roomreq_id = $key['roomreq_id'];
               $req2->donate_list = $key['donate_list']+1;
               $req2->add = $key['add'];
