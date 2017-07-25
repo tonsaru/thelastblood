@@ -82,6 +82,11 @@ class RoomreqController extends Controller
             $req->patient_hos_long = $request->patient_hos_long;
 
             $req->save();
+
+            $stared = new ListroomController;
+            $stared->getstarted();
+
+
             return "Request Success  : ".$req;
         }elseif($check->patient_status == "not complete"){
             return "patient same";
