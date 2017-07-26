@@ -54,6 +54,7 @@ $api->version('v1', function (Router $api) {
 
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
         $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@show');
+        $api->post('donate/index','App\\Http\\Controllers\\RoomdonateController@index');
 
         $api->resource('friend','App\\Http\\Controllers\\FriendController');
         $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
@@ -62,7 +63,22 @@ $api->version('v1', function (Router $api) {
         $api->post('ldonate/data','App\\Http\\Controllers\\ListdonateController@datashow');
         $api->post('ldonate/data2','App\\Http\\Controllers\\ListdonateController@datamod');
 
-        $api->get('Rdonate/checkstatus','App\\Http\\Controllers\\ListroomController@checkstatus');
-        $api->get('Rdonate/checkstate','App\\Http\\Controllers\\ListroomController@checkstate');
+        $api->get('Rdonate/roomreq/old','App\\Http\\Controllers\\ListroomController@roomreq_old');
+        $api->get('Rdonate/roomreq/new','App\\Http\\Controllers\\ListroomController@roomreq_new');
+        $api->get('Rdonate/nreceived','App\\Http\\Controllers\\ListroomController@Nreceived');
+        $api->get('Rdonate/nreceived/count','App\\Http\\Controllers\\ListroomController@Nreceived_count');
+        $api->post('Rdonate/manage/old','App\\Http\\Controllers\\ListroomController@manageblood_old');
+        $api->post('Rdonate/manage/new','App\\Http\\Controllers\\ListroomController@manageblood_new');
+        $api->get('Rdonate/getstarted','App\\Http\\Controllers\\ListroomController@getstarted');
+        $api->get('Rdonate/getrandom','App\\Http\\Controllers\\ListroomController@getrandom');
+        $api->post('Rdonate/InArea','App\\Http\\Controllers\\ListroomController@InArea_count');
+        $api->post('Rdonate/InArea/count','App\\Http\\Controllers\\ListroomController@InArea_count');
+        $api->post('Rdonate/InArea/random','App\\Http\\Controllers\\ListroomController@InArea_random');
+
+        $api->post('Rdonate/OtherArea','App\\Http\\Controllers\\ListroomController@OtherArea');
+        $api->post('Rdonate/OtherArea/count','App\\Http\\Controllers\\ListroomController@OtherArea_count');
+        $api->get('Rdonate/OtherArea/random','App\\Http\\Controllers\\ListroomController@OtherArea_random');
+
+
     });
 });

@@ -45,5 +45,10 @@ class TestController extends Controller
         return Response()->json($data);
     }
 
+    //////////////////////////////////////////////////////////////////////
+
+    public function test1(){
+        
+    }
 
 }

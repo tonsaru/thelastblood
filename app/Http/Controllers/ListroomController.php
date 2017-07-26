@@ -17,14 +17,14 @@ class ListroomController extends Controller
          $checkdata = DB::select('select * from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and list_status = ? ', ['not complete']);
         //  return $checkdata;
          foreach ($checkdata as $key) {
-             $arr[] = [
+             $arr4[] = [
                         'roomreq_id' => $key->roomreq_id,
                         'donate_list' => $key->donate_list,
                         'remaining' => $key->remaining,
                         'status' => $key->list_status
                     ];
          }
-        return $arr;
+        return $arr4;
 
         // $resultArray = json_decode(json_encode($checkdata), true);
         // return $resultArray;
@@ -35,14 +35,14 @@ class ListroomController extends Controller
          $checkdata = DB::select('select * from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and list_status = ? ORDER BY id DESC LIMIT 1', ['not complete']);
         //  return $checkdata;
          foreach ($checkdata as $key) {
-             $arr[] = [
+             $arr5[] = [
                         'roomreq_id' => $key->roomreq_id,
                         'donate_list' => $key->donate_list,
                         'remaining' => $key->remaining,
                         'status' => $key->list_status
                     ];
          }
-        return $arr;
+        return $arr5;
 
         // $resultArray = json_decode(json_encode($checkdata), true);
         // return $resultArray;
@@ -253,7 +253,7 @@ class ListroomController extends Controller
             if($person >= $key['remaining'] && $person > 0){
                 $add = $key['remaining'];
                 $person -= $add;
-                $arr[] = [
+                $arr6[] = [
                             'roomreq_id' => $key['roomreq_id'],
                             'donate_list' => $key['donate_list'],
                             'remaining' => $key['remaining']-$add,
@@ -265,7 +265,7 @@ class ListroomController extends Controller
             }elseif($person > 0){
                 $add = $person;
                 $person -= $add;
-                $arr[] = [
+                $arr6[] = [
                             'roomreq_id' => $key['roomreq_id'],
                             'donate_list' => $key['donate_list'],
                             'remaining' => $key['remaining']-$add,
@@ -280,11 +280,11 @@ class ListroomController extends Controller
         $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         $req = new ListDonateroom;
         $req->no = $lastno->no;
-        $req->roomreq_id = $arr[0]['roomreq_id'];
-        $req->donate_list = $arr[0]['donate_list']+1;
-        $req->add = $arr[0]['add'];
-        $req->remaining = $arr[0]['remaining'];
-        $req->list_status = $arr[0]['list_status'];
+        $req->roomreq_id = $arr6[0]['roomreq_id'];
+        $req->donate_list = $arr6[0]['donate_list']+1;
+        $req->add = $arr6[0]['add'];
+        $req->remaining = $arr6[0]['remaining'];
+        $req->list_status = $arr6[0]['list_status'];
         $req->save();
 
     }
@@ -299,7 +299,7 @@ class ListroomController extends Controller
             if($person >= $key['remaining'] && $person > 0){
                 $add = $key['remaining'];
                 $person -= $add;
-                $arr[] = [
+                $arr7[] = [
                             'roomreq_id' => $key['roomreq_id'],
                             'donate_list' => $key['donate_list'],
                             'remaining' => $key['remaining']-$add,
@@ -311,7 +311,7 @@ class ListroomController extends Controller
             }elseif($person > 0){
                 $add = $person;
                 $person -= $add;
-                $arr[] = [
+                $arr7[] = [
                             'roomreq_id' => $key['roomreq_id'],
                             'donate_list' => $key['donate_list'],
                             'remaining' => $key['remaining']-$add,
@@ -322,7 +322,7 @@ class ListroomController extends Controller
 
             }
         }
-        foreach ($arr as $key) {
+        foreach ($arr7 as $key) {
             //query max no
             // $checkno = DB::table('list_donaterooms')->where('roomreq_id', $key['roomreq_id']) ->orderBy('no', 'desc')->first();
               $req2 = new ListDonateroom;
@@ -383,7 +383,7 @@ class ListroomController extends Controller
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->InArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
-        $lastremain = DB::select('SELECT remaining FROM `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
+        $lastremain = DB::select('select remaining from `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
         // return $lastremain[0]->remaining;
         if($listnow == ''){
             $listnow = 0;
@@ -394,16 +394,16 @@ class ListroomController extends Controller
             return "no data"; //no updates
         }
         foreach ($data as $d) {
-            $arr[] =  $d->id;
+            $arr2[] =  $d->id;
         }
-        if( count($arr) < $lastremain[0]->remaining ){
-            $datarand = $arr;
+        if( count($arr2) < $lastremain[0]->remaining ){
+            $datarand = $arr2;
             // return [$datarand, "aaaaa"];
         }else{
-            $rand = array_rand($arr, $count);
+            $rand = array_rand($arr2, $count);
             sort($rand);
             foreach ($rand as $r) {
-                $datarand[] = $arr[$r];
+                $datarand[] = $arr2[$r];
             }
             // return [$datarand, 'bbbb'];
         }
@@ -435,16 +435,16 @@ class ListroomController extends Controller
             return "no data"; //no updates
         }
         foreach ($data as $d) {
-            $arr[] =  $d->id;
+            $arr3[] =  $d->id;
         }
-        if( count($arr) < $lastremain[0]->remaining ){
-            $datarand = $arr;
+        if( count($arr3) < $lastremain[0]->remaining ){
+            $datarand = $arr3;
             // return [$datarand, "aaaaa"];
         }else{
-            $rand = array_rand($arr, $add);
+            $rand = array_rand($arr3, $add);
             sort($rand);
             foreach ($rand as $r) {
-                $datarand[] = $arr[$r];
+                $datarand[] = $arr3[$r];
             }
             // return [$datarand, 'bbbb'];
         }
