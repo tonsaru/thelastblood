@@ -21,8 +21,26 @@ class RoomdonateController extends Controller
      //จะแสดงแค่ห้องเด่วก็ให้มาใส่ เงื่อนไขตรงนี้เอา
     public function index()
     {
+        // $currentUser = JWTAuth::parseToken()->authenticate();
+        // // $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+        // $user = DB::table('users')->where('id',$currentUser->id)->first();
+        //
+        // if($currentUser->status == "ready"){
+        //     $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_blood,roomreqs.patient_blood_type,patient_province,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ?',[ 'complete',$currentUser->id,$currentUser->id]);
+        //     if($req == null){
+        //         $req = 'no data';
+        //     }
+        //     $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
+        //     return $data;
+        // }else{
+        //     $req = null;
+        //     $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
+        //     return $data;
+        // }
+    }
+
+    public function show(){
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
         $user = DB::table('users')->where('id',$currentUser->id)->first();
 
         if($currentUser->status == "ready"){
@@ -37,6 +55,7 @@ class RoomdonateController extends Controller
             $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
             return $data;
         }
+        return $user;
     }
 
     /**
@@ -101,7 +120,7 @@ class RoomdonateController extends Controller
      * @return \Illuminate\Http\Response
      */
     //  input roomreq_id
-    public function show(Request $request)
+    public function showdetail(Request $request)
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
         //check ว่าเข้าได้เฉพาะของที่ตัวเองมี

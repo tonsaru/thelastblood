@@ -26,11 +26,10 @@ class ListroomController extends Controller
          }if($checkdata == null){
                 $arr4 = null;
          }
-
         return $arr4;
-
-        // $resultArray = json_decode(json_encode($checkdata), true);
-        // return $resultArray;
+    }
+    public function roomreq_oldcount(){
+        return count($this->roomreq_old());
     }
 
     // เอาเฉพาะอันล่าสุดออกมา
@@ -52,17 +51,24 @@ class ListroomController extends Controller
         // $resultArray = json_decode(json_encode($checkdata), true);
         // return $resultArray;
     }
+    public function roomreq_newcount(){
+        return count($this->roomreq_new());
+    }
 
     //แสดงว่ามีใครที่ยังไม่ได้รับข้อความ ( ในระบบทั้งหมด )
     public function Nreceived(){
         $currentUser = JWTAuth::parseToken()->authenticate();
 
         //แสดงรายชื่อที่ได้รับ message แล้ว ดูของอันล่าสุดของแต่ละห้อง
-        $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
-            From list_donates JOIN users ON list_donates.user_id = users.id
-            where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
-            AND users.status =:status AND users.status_mes =:status2 ' , ['status' => 'ready','status2' => 'received']);
+        // $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
+        //     From list_donates JOIN users ON list_donates.user_id = users.id
+        //     where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
+        //     AND users.status =:status AND users.status_mes =:status2 ' , ['status' => 'ready','status2' => 'received']);
+        $checkdata = DB::select('select distinct(list_donates.user_id) as id, list_donates.roomreq_id, donate_list, users.status, users.status_mes
+                                    From list_donates JOIN users ON list_donates.user_id = users.id
+                                    where users.status =:status AND users.status_mes =:status2 ',['status' => 'ready','status2' => 'received']);
         $resultArray = json_decode(json_encode($checkdata), true);
+
         // return $resultArray;
 
         //คนในระบบทั้งหมด ไม่ใช่ตัวเอง status = ready, status_mes = not recieved, ไม่ใช่คนที่เคย
@@ -102,13 +108,8 @@ class ListroomController extends Controller
         $req1->add = 0;
         $req1->remaining = $lastreq->countblood*10;
         $req1->save();
-        //
+
         $allcount = $this->Nreceived_count();
-        // $remain = $allcount //ตัวที่เหลืออยู่
-        // return $allcount;
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-
         if($cblood >= $allcount){
             $add = $allcount;
             // return "asda";
@@ -118,77 +119,23 @@ class ListroomController extends Controller
             $add = $cblood;
             // return "asada";
             $this->manageblood_new($add);
-            // return "asada";
-            $all_remain = $allcount - $add;
-            // return "asada";
-            $this->manageblood_old($all_remain);
+            if( $this->roomreq_oldcount() > 0){
+                // return "asada";
+                $all_remain = $allcount - $add;
+                // return "asada";
+                $this->manageblood_old($all_remain);
+            }
+
         }
-        return "finish";
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        // if( $allcount < $cblood ) {
-        //     $this->manageblood_new($allcount);
-        //     $remain = $remain - $rand->InArea_count();
-        //     if( $cblood >= $rand->InArea_count() ){
-        //         $cblood = $cblood - $rand->InArea_count();
-        //         $rand->InArea_random( $lastreq->id, $cblood, $rand->InArea_count() );
-        //         if( $cblood > 0 ){
-        //             if( $cblood > $rand->OtherArea_count() ){
-        //                 $cblood = $cblood - $rand->OtherArea_count();
-        //                 $rand->OtherArea_random( $lastreq->id,$cblood,$rand->OtherArea_count() );
-        //
-        //                 return "Fin In,Other Area Not Complete, Remaining : ".$cblood;
-        //             }else{
-        //                 $rand->OtherArea_random( $lastreq->id, $cblood );
-        //                 $status = 'complete';
-        //                 return "Fin In,Other Area Complete";
-        //             }
-        //         }else{
-        //             $status = 'complete';
-        //             return "Fin InArea Complete";
-        //         }
-        //     }else{
-        //         $rand->InArea_random( $cblood );
-        //         $status = 'complete';
-        //         return "Fin InArea Complete";
-        //     }
-        // }else{
-        //     $this->manageblood_new($request);
-        //     $remain = $remain - $rand->InArea_count();
-        //     $cblood = $cblood - $rand->InArea_count();
-        //     $rand->InArea_random();
-        //     if( $cblood > 0 ){
-        //         $rand->OtherArea_random();
-        //         $remain = $remain - $rand->OtherArea_count();
-        //         $this->manageblood_old($remain);
-        //         $rand->OtherArea_random();
-        //         return "fin In, Other Area Complete, ";
-        //         }else{
-        //             $status = "complete";
-        //             $remain = $remain - $rand->OtherArea_count();
-        //             $this->manageblood_old($remain);
-        //             $rand->OtherArea_random();
-        //
-        //             return "fin In,Other Area Complete, Person Now, Old";
-        //         }
-        //     }else{
-        //         $status = "complete";
-        //         $this->manageblood_old($remain);
-        //
-        //         $rand->InArea_random($remain);//input จำนวนคนเข้าไป ทำการใส่ข้อมูลของแต่ละคนเข้าไปจนหมด แล้ว return ที่ยังไม่ได้ทำออกมาด้วย
-        //         $remain = $remain - $rand->InArea_count();
-        //         $rand->OtherArea_random($remain);
-        //
-        //         return "fin In Area Complete, Person Now, Olds";
-        //     }
-        // }
+        // return "finish";
     }
 
     public function getrandom(){
+        $lastno = DB::table('list_donaterooms')->orderBy('no','desc')->first();
+
         $lastlist = DB::select('select * from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and no = ? ', [$lastno->no]);
-        $address = DB::select('select province from users where id = (SELECT user_id FROM`roomreqs` ORDER BY id DESC limit 1)');
-        $myadd = $address[0]->province;
+        $address = DB::select('select patient_province from roomreqs join users on users.id = roomreqs.user_id where roomreqs.user_id  = (select user_id from roomreqs order by id desc limit 1) and roomreqs.id = ( select max(id) from roomreqs)');
+        $myadd = $address[0]->patient_province;
         // return $myadd;
         //ต้องทำทั้งหมดกี่คน
         $sum = DB::select('select sum(`add`) as sum from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and no = ?', [$lastno->no]);
@@ -204,8 +151,9 @@ class ListroomController extends Controller
                        'status' => $key->list_status,
                    ];
         }
-
+        // return $list;
         $cInArea = $this->InArea_count($myadd);
+        // return $cInArea;
         $cOtherArea = $this->OtherArea_count($myadd);
         if( $sum_add  >= $cInArea ){
             $InArea_add = $cInArea;
@@ -217,36 +165,37 @@ class ListroomController extends Controller
         // return "InArea_add : ".$InArea_add." OtherArea_add : ".$OtherArea_add;
         //เหลือกี่คนที่ต้องทำ
         $InArea_remain = $InArea_add;
+        // return $InArea_remain;10
         $OtherArea_remain = $OtherArea_add;
-        $remain = $InArea_remain+$OtherArea_remain;
+        // return $OtherArea_remain;0
+        // return 'InArea : '.$InArea_remain.' OtherArea : '.$OtherArea_remain;
         foreach ( $list as $key ) {
-            // $req = DB::table('roomreqs')->select('countblood')->where('id', $key['roomreq_id'])->first();
             if( $InArea_remain > 0 ){
-                if($key['add'] > $InArea_remain){
-                    $add_do = $InArea_remain;
-                    $this->InArea_random($key['roomreq_id'] , $add_do);
-                    $InArea_remain = $InArea_remain - $add_do;
-
-                    $add_do2 = $key['add'] - $add_do;
-                    $this->OtherArea_random($key['roomreq_id'] ,$add_do2);
-                    $InArea_remain = $InArea_remain - $add_do2;
-                    $remain = $remain - ($add_do + $add_do2);
-
+                if( $InArea_remain >= $key['add'] ){
+                    $this->InArea_random( $key['roomreq_id'], $key['add'] );
+                    $InArea_remain -= $key['add'];
+                    $key['add'] = 0;
                 }else{
-                    $add_do = $key['add'];
-                    $this->InArea_random($key['roomreq_id'] , $add_do);
-                    $InArea_remain = $InArea_remain - $add_do;
-                    $remain = $remain - $add_do;
+                    $this->InArea_random( $key['roomreq_id'], $InArea_remain );
+                    $key['add'] -= $InArea_remain;
+                    $InArea_remain = 0;
+                }
+
+                if($key['add'] > 0){
+                    $this->OtherArea_random( $key['roomreq_id'], $key['add'] );
+                    $OtherArea_remain -= $key['add'];
+                    $key['add'] = 0;
                 }
             }else{
-                $add_do = $key['add'];
-                $this->OtherArea_random($key['roomreq_id'] , $add_do);
+                if( $OtherArea_remain > 0){
+                    $this->OtherArea_random( $key['roomreq_id'], $key['add']);
+                    $OtherArea_remain -= $key['add'];
+                    $key['add'] = 0;
+                }
             }
 
         }
     }
-
-
 
 //สร้าง DonatelistRoom ของตัวล่าสุดครั้งแรก
     public function manageblood_new($person){
@@ -343,20 +292,24 @@ class ListroomController extends Controller
     //available
     public function InArea($province){
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
-            From list_donates JOIN users ON list_donates.user_id = users.id
-            where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
-            AND users.status =:status AND users.status_mes =:status2 ' , ['status' => 'ready','status2' => 'received']);
-            $resultArray = json_decode(json_encode($checkdata), true);
-            $sysCount = DB::table('users')
-                            ->select('id', 'name', 'status','status_mes','province')
-                            ->where('id', '!=', $currentUser->id)
-                            ->where('status', 'ready')
-                            ->where('status_mes', 'not received')
-                            ->where('province',$province)
-                            ->whereNotIn('id', $resultArray)
-                            ->get();
-            return $sysCount;
+        // $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
+        //     From list_donates JOIN users ON list_donates.user_id = users.id
+        //     where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
+        //     AND users.status =:status AND users.status_mes =:status2' , ['status' => 'ready','status2' => 'received']);
+        $checkdata = DB::select('select distinct(list_donates.user_id) as id, list_donates.roomreq_id, donate_list, users.status, users.status_mes
+                                    From list_donates JOIN users ON list_donates.user_id = users.id
+                                    where users.status =:status AND users.status_mes =:status2 ',['status' => 'ready','status2' => 'received']);
+        $resultArray = json_decode(json_encode($checkdata), true);
+        // return $resultArray;
+        $sysCount = DB::table('users')
+                        ->select('id', 'name', 'status','status_mes','province')
+                        ->where('id', '!=', $currentUser->id)
+                        ->where('status', 'ready')
+                        ->where('status_mes', 'not received')
+                        ->where('province',$province)
+                        ->whereNotIn('id', $resultArray)
+                        ->get();
+        return $sysCount;
     }
     public function InArea_count($province){
         return $this->InArea($province)->count();
@@ -364,20 +317,23 @@ class ListroomController extends Controller
 
     public function OtherArea($province){
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
-            From list_donates JOIN users ON list_donates.user_id = users.id
-            where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
-            AND users.status =:status AND users.status_mes =:status2 ' , ['status' => 'ready','status2' => 'received']);
-            $resultArray = json_decode(json_encode($checkdata), true);
-            $sysCount = DB::table('users')
-                            ->select('id', 'name', 'status','status_mes','province')
-                            ->where('id', '!=', $currentUser->id)
-                            ->where('status', 'ready')
-                            ->where('status_mes', 'not received')
-                            ->where('province','!=',$province)
-                            ->whereNotIn('id', $resultArray)
-                            ->get();
-            return $sysCount;
+        // $checkdata = DB::select('select distinct(user_id) as id, roomreq_id, donate_list, users.status, users.status_mes
+        //     From list_donates JOIN users ON list_donates.user_id = users.id
+        //     where (list_donates.roomreq_id, list_donates.donate_list) IN ( select roomreq_id, max(donate_list) from list_donates  GROUP BY roomreq_id )
+        //     AND users.status =:status AND users.status_mes =:status2 ' , ['status' => 'ready','status2' => 'received']);
+        $checkdata = DB::select('select distinct(list_donates.user_id) as id, list_donates.roomreq_id, donate_list, users.status, users.status_mes
+                                    From list_donates JOIN users ON list_donates.user_id = users.id
+                                    where users.status =:status AND users.status_mes =:status2 ',['status' => 'ready','status2' => 'received']);
+        $resultArray = json_decode(json_encode($checkdata), true);
+        $sysCount = DB::table('users')
+                        ->select('id', 'name', 'status','status_mes','province')
+                        ->where('id', '!=', $currentUser->id)
+                        ->where('status', 'ready')
+                        ->where('status_mes', 'not received')
+                        ->where('province','!=',$province)
+                        ->whereNotIn('id', $resultArray)
+                        ->get();
+        return $sysCount;
     }
     public function OtherArea_count($province){
         return $this->OtherArea($province)->count();
@@ -386,13 +342,16 @@ class ListroomController extends Controller
 // input $roomreq_id, $cblood, $count
     public function InArea_random($roomreq_id, $count){
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
+        // return $que->patient_province;
         $data = $this->InArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
+        //เอา remain ของห้องนั้นออกมา โดยการเอาออกมาต้องไปเอาของตัวก่อนหน้านั้น
         $lastremain = DB::select('select remaining from `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
         // return $lastremain[0]->remaining;
         if($listnow == null){
             $listnow = 0;
         }
+        // return $listnow;
         // return $data;
 
         if($data->count() == 0){
@@ -426,11 +385,11 @@ class ListroomController extends Controller
         }
     }
 
-    public function OtherArea_random($roomreq_id, $add){
+    public function OtherArea_random($roomreq_id, $count){
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->OtherArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
-        $lastremain = DB::select('SELECT remaining FROM `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
+        $lastremain = DB::select('select remaining from `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
         if($listnow == null){
             $listnow = 0;
         }
@@ -446,7 +405,7 @@ class ListroomController extends Controller
             $datarand = $arr3;
             // return [$datarand, "aaaaa"];
         }else{
-            $rand = array_rand($arr3, $add);
+            $rand = array_rand($arr3, $count);
             sort($rand);
             foreach ($rand as $r) {
                 $datarand[] = $arr3[$r];
@@ -466,6 +425,13 @@ class ListroomController extends Controller
         }
     }
 
-
+    public function fixreceived(){
+        $req = DB::table('users')->select('id','status_mes')->where('status_mes','received')->get();
+        foreach ($req as $user) {
+            $update = User::find($user->id);
+            $update->status_mes = 'not received';
+            $update->save();
+        }
+    }
 
 }

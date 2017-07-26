@@ -53,8 +53,8 @@ $api->version('v1', function (Router $api) {
         $api->post('req/thankyou','App\\Http\\Controllers\\RoomreqController@thankyou');
 
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
-        $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@show');
-        $api->post('donate/index','App\\Http\\Controllers\\RoomdonateController@index');
+        $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@showdetail');
+        $api->get('donate/show','App\\Http\\Controllers\\RoomdonateController@show');
 
         $api->resource('friend','App\\Http\\Controllers\\FriendController');
         $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
@@ -71,14 +71,15 @@ $api->version('v1', function (Router $api) {
         $api->post('Rdonate/manage/new','App\\Http\\Controllers\\ListroomController@manageblood_new');
         $api->get('Rdonate/getstarted','App\\Http\\Controllers\\ListroomController@getstarted');
         $api->get('Rdonate/getrandom','App\\Http\\Controllers\\ListroomController@getrandom');
-        $api->post('Rdonate/InArea','App\\Http\\Controllers\\ListroomController@InArea_count');
+        $api->post('Rdonate/InArea','App\\Http\\Controllers\\ListroomController@InArea');
         $api->post('Rdonate/InArea/count','App\\Http\\Controllers\\ListroomController@InArea_count');
         $api->post('Rdonate/InArea/random','App\\Http\\Controllers\\ListroomController@InArea_random');
 
         $api->post('Rdonate/OtherArea','App\\Http\\Controllers\\ListroomController@OtherArea');
         $api->post('Rdonate/OtherArea/count','App\\Http\\Controllers\\ListroomController@OtherArea_count');
-        $api->get('Rdonate/OtherArea/random','App\\Http\\Controllers\\ListroomController@OtherArea_random');
+        $api->post('Rdonate/OtherArea/random','App\\Http\\Controllers\\ListroomController@OtherArea_random');
 
-
+        $api->get('fixreceived','App\\Http\\Controllers\\ListroomController@fixreceived');
+        $api->get('Rdonate/roomreq/old/count','App\\Http\\Controllers\\ListroomController@roomreq_oldcount');
     });
 });
