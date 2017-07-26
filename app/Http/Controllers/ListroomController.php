@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\TestController;
 use JWTAuth;
+use App\User;
+use App\ListDonate;
 
 class ListroomController extends Controller
 {
@@ -87,7 +89,7 @@ class ListroomController extends Controller
         // return $allcount;
         // input roomreq_id, countblood
         $req1 = new ListDonateroom;
-        $req1->no = 0;
+        $req1->no = $lastno->no+1;
         $req1->roomreq_id = $lastreq->id;
         // เริ่มที่ 0 เพราะว่าตอนทำจะได้เป็นครั้งแรก จะได้ดูง่ายๆ
         $req1->donate_list = 0;
@@ -176,6 +178,71 @@ class ListroomController extends Controller
         //     }
         // }
     }
+
+    public function getrandom(){
+        $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
+        $lastlist = DB::select('select * from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and no = ? ', [$lastno->no]);
+        $address = DB::select('select province from users where id = (SELECT user_id FROM`roomreqs` ORDER BY id DESC limit 1)');
+        $myadd = $address[0]->province;
+        // return $myadd;
+        //ต้องทำทั้งหมดกี่คน
+        $sum = DB::select('select sum(`add`) as sum from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and no = ?', [$lastno->no]);
+        $sum_add = $sum[0]->sum;
+
+        foreach ($lastlist as $key) {
+            $list[] = [
+                       'no' => $key->no,
+                       'roomreq_id' => $key->roomreq_id,
+                       'donate_list' => $key->donate_list,
+                       'add' => $key->add,
+                       'remaining' => $key->remaining,
+                       'status' => $key->list_status,
+                   ];
+        }
+
+        $cInArea = $this->InArea_count($myadd);
+        $cOtherArea = $this->OtherArea_count($myadd);
+        if( $sum_add  >= $cInArea ){
+            $InArea_add = $cInArea;
+            $OtherArea_add = $sum_add - $InArea_add;
+        }else{
+            $InArea_add = $sum_add;
+            $OtherArea_add = 0;
+        }
+        // return "InArea_add : ".$InArea_add." OtherArea_add : ".$OtherArea_add;
+        //เหลือกี่คนที่ต้องทำ
+        $InArea_remain = $InArea_add;
+        $OtherArea_remain = $OtherArea_add;
+        $remain = $InArea_remain+$OtherArea_remain;
+        foreach ($list as $key ) {
+            // $req = DB::table('roomreqs')->select('countblood')->where('id', $key['roomreq_id'])->first();
+            if( $InArea_remain > 0 ){
+                if($key['add'] > $InArea_remain){
+                    $add_do = $InArea_remain;
+                    $this->InArea_random($key['roomreq_id'] , $add_do);
+                    $InArea_remain = $InArea_remain - $add_do;
+
+                    $add_do2 = $key['add'] - $add_do;
+                    $this->OtherArea_random($key['roomreq_id'] ,$add_do2);
+                    $InArea_remain = $InArea_remain - $add_do2;
+                    $remain = $remain - ($add_do + $add_do2);
+
+                }else{
+                    $add_do = $key['add'];
+                    $this->InArea_random($key['roomreq_id'] , $add_do);
+                    $InArea_remain = $InArea_remain - $add_do;
+                    $remain = $remain - $add_do;
+                }
+            }else{
+                $add_do = $key['add'];
+                $this->OtherArea_random($key['roomreq_id'] , $add_do);
+            }
+
+        }
+    }
+
+
+
 //สร้าง DonatelistRoom ของตัวล่าสุดครั้งแรก
     public function manageblood_new($person){
         // return 'asda';
@@ -210,9 +277,9 @@ class ListroomController extends Controller
         }
 
         // return $arr;
-        $lastno = DB::table('list_donaterooms')->where('roomreq_id',$arr[0]['roomreq_id'])->orderBy('no', 'desc')->first();
+        $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         $req = new ListDonateroom;
-        $req->no = $lastno->no + 1;
+        $req->no = $lastno->no;
         $req->roomreq_id = $arr[0]['roomreq_id'];
         $req->donate_list = $arr[0]['donate_list']+1;
         $req->add = $arr[0]['add'];
@@ -226,6 +293,7 @@ class ListroomController extends Controller
     //input person คนที่จะให้ทำงาน
     public function manageblood_old($person){
         $roomreq_old = $this->roomreq_old();
+        $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         // return "asdad";
         foreach ($roomreq_old as $key) {
             if($person >= $key['remaining'] && $person > 0){
@@ -256,9 +324,9 @@ class ListroomController extends Controller
         }
         foreach ($arr as $key) {
             //query max no
-            $checkno = DB::table('list_donaterooms')->where('roomreq_id', $key['roomreq_id']) ->orderBy('no', 'desc')->first();
+            // $checkno = DB::table('list_donaterooms')->where('roomreq_id', $key['roomreq_id']) ->orderBy('no', 'desc')->first();
               $req2 = new ListDonateroom;
-              $req2->no = $checkno->no+1;
+              $req2->no = $lastno->no;
               $req2->roomreq_id = $key['roomreq_id'];
               $req2->donate_list = $key['donate_list']+1;
               $req2->add = $key['add'];
@@ -285,8 +353,8 @@ class ListroomController extends Controller
                             ->get();
             return $sysCount;
     }
-    public function InArea_count(Request $request){
-        return $this->InArea($request)->count();
+    public function InArea_count($province){
+        return $this->InArea($province)->count();
     }//input count person
 
     public function OtherArea($province){
@@ -306,14 +374,17 @@ class ListroomController extends Controller
                             ->get();
             return $sysCount;
     }
-    public function OtherArea_count(){
-        return $this->OtherArea($request)->count();
+    public function OtherArea_count($province){
+        return $this->OtherArea($province)->count();
     }
 
-    public function InArea_random($roomreq_id, $cblood, $count){
+// input $roomreq_id, $cblood, $count
+    public function InArea_random($roomreq_id, $count){
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->InArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
+        $lastremain = DB::select('SELECT remaining FROM `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
+        // return $lastremain[0]->remaining;
         if($listnow == ''){
             $listnow = 0;
         }
@@ -325,23 +396,28 @@ class ListroomController extends Controller
         foreach ($data as $d) {
             $arr[] =  $d->id;
         }
-        if( count($arr) < $cblood ){
+        if( count($arr) < $lastremain[0]->remaining ){
             $datarand = $arr;
             // return [$datarand, "aaaaa"];
         }else{
-            $rand = array_rand($arr,$count);
+            $rand = array_rand($arr, $count);
             sort($rand);
             foreach ($rand as $r) {
                 $datarand[] = $arr[$r];
             }
             // return [$datarand, 'bbbb'];
         }
+        // return $datarand;
         foreach ($datarand as $ran) {
             $req = new ListDonate;
             $req->roomreq_id = $roomreq_id;
             $req->donate_list = $listnow+1;
             $req->user_id = $ran;
             $req->save();
+
+            $update = User::find($ran);
+            $update->status_mes = 'received';
+            $update->save();
         }
     }
 
@@ -349,6 +425,7 @@ class ListroomController extends Controller
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->OtherArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
+        $lastremain = DB::select('SELECT remaining FROM `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
         if($listnow == ''){
             $listnow = 0;
         }
@@ -360,11 +437,11 @@ class ListroomController extends Controller
         foreach ($data as $d) {
             $arr[] =  $d->id;
         }
-        if( count($arr) < $remain ){
+        if( count($arr) < $lastremain[0]->remaining ){
             $datarand = $arr;
             // return [$datarand, "aaaaa"];
         }else{
-            $rand = array_rand($arr,$add);
+            $rand = array_rand($arr, $add);
             sort($rand);
             foreach ($rand as $r) {
                 $datarand[] = $arr[$r];
@@ -377,6 +454,10 @@ class ListroomController extends Controller
             $req->donate_list = $listnow+1;
             $req->user_id = $ran;
             $req->save();
+
+            $update = User::find($ran);
+            $update->status_mes = 'received';
+            $update->save();
         }
     }
 

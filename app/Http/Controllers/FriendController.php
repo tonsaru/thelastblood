@@ -22,6 +22,7 @@ class FriendController extends Controller
                     ->join('users', 'friends.friend_id', '=', 'users.id')
                     ->select('friends.user_id','friends.friend_id','users.name','users.phone','users.status','users.blood','users.blood_type','users.img')
                     ->where('user_id',$currentUser->id )
+                    ->orderBy('users.status', 'asc')
                     ->get();
         return $data;
     }

@@ -23,21 +23,18 @@ class RoomdonateController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
         $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+        $user = DB::table('users')->where('id',$currentUser->id)->first();
 
         if($currentUser->status == "ready"){
-            $req = DB::table('roomreqs')
-                ->join('users', 'users.id', '=', 'roomreqs.user_id')
-                ->where('user_id', '!=', $currentUser->id)
-                ->where('patient_status', '!=', 'complete')
-                ->where('patient_province', $currentUser->province)
-                ->select('users.name','roomreqs.user_id','roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','patient_province','users.img')
-                ->whereNotIn('roomreqs.id', $check)
-                ->get();
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'status'=>$currentUser->status);
+            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_blood,roomreqs.patient_blood_type,patient_province,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ?',[ 'complete',$currentUser->id,$currentUser->id]);
+            if($req == null){
+                $req = 'no data';
+            }
+            $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
             return $data;
         }else{
             $req = null;
-            $data = array('user' => $req, 'last_date_donate' => $currentUser->last_date_donate ,'status'=>$currentUser->status);
+            $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
             return $data;
         }
     }
@@ -65,27 +62,34 @@ class RoomdonateController extends Controller
         $update = Roomreq::find($request->roomreq_id);
 
         if($currentUser->status == "ready"){
-            // check add myself
-            if($currentUser->id == $update->user_id)
-            {
-                return "Hello myself";
-            }
+          if($request->status == 'accept'){
+              // check add myself
+              if($currentUser->id == $update->user_id)
+              {
+                  return "Hello myself";
+              }
 
-            $update->countblood = $update->countblood-1;
-            // return $update;
-            $update->save();
+              $update->countblood = $update->countblood-1;
+              // return $update;
+              $update->save();
 
-            $dona = new Roomdonate;
-            $dona->roomreq_id = $request->roomreq_id;
-            $dona->user_id = $currentUser->id;
-            $dona->status = $request->status;
-            $dona->save();
+              $dona = new Roomdonate;
+              $dona->roomreq_id = $request->roomreq_id;
+              $dona->user_id = $currentUser->id;
+              $dona->status = $request->status;
+              $dona->save();
 
-            $currentUser->status='unready';
-            $currentUser->last_date_donate = $currentUser->updated_at;
-            $currentUser->save();
+              $currentUser->status='unready';
+              $currentUser->last_date_donate = $currentUser->updated_at;
+              $currentUser->save();
 
-            return "You donate blood to ".$update->patient_name.' Your Status is '.$currentUser->status." Roomreq blood remaining : ".$update->countblood;
+              return "You donate blood to ".$update->patient_name.' Your Status is '.$currentUser->status." Roomreq blood remaining : ".$update->countblood;
+          }else{
+              $update = User::find($currentUser->id);
+              $update->status_mes = 'not received';
+              $update->save();
+              return "you decline";
+          }
         }
         return "you not ready plz check status or waiting time";
     }
