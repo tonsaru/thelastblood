@@ -182,13 +182,13 @@ class ListroomController extends Controller
                 }
 
                 if($key['add'] > 0){
-                    $this->OtherArea_random( $key['roomreq_id'], $key['add'] );
+                    $this->OtherArea_random( $key['roomreq_id'], $key['add'], 0);
                     $OtherArea_remain -= $key['add'];
                     $key['add'] = 0;
                 }
             }else{
                 if( $OtherArea_remain > 0){
-                    $this->OtherArea_random( $key['roomreq_id'], $key['add']);
+                    $this->OtherArea_random( $key['roomreq_id'], $key['add'], 1);
                     $OtherArea_remain -= $key['add'];
                     $key['add'] = 0;
                 }
@@ -384,8 +384,8 @@ class ListroomController extends Controller
             $update->save();
         }
     }
-
-    public function OtherArea_random($roomreq_id, $count){
+    //choice 0 ทำต่อจากเดิม่ 1 สร้างใหม่
+    public function OtherArea_random($roomreq_id, $count, $choice){
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->OtherArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
@@ -415,7 +415,7 @@ class ListroomController extends Controller
         foreach ($datarand as $ran) {
             $req = new ListDonate;
             $req->roomreq_id = $roomreq_id;
-            $req->donate_list = $listnow+1;
+            $req->donate_list = $listnow + $choice;
             $req->user_id = $ran;
             $req->save();
 
