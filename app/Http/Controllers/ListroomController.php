@@ -23,7 +23,10 @@ class ListroomController extends Controller
                         'remaining' => $key->remaining,
                         'status' => $key->list_status
                     ];
+         }if($checkdata == null){
+                $arr4 = null;
          }
+
         return $arr4;
 
         // $resultArray = json_decode(json_encode($checkdata), true);
@@ -41,6 +44,8 @@ class ListroomController extends Controller
                         'remaining' => $key->remaining,
                         'status' => $key->list_status
                     ];
+         }if($checkdata == null){
+                $arr5 = null;
          }
         return $arr5;
 
