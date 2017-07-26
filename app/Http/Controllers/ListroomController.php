@@ -186,7 +186,6 @@ class ListroomController extends Controller
     }
 
     public function getrandom(){
-        $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         $lastlist = DB::select('select * from list_donaterooms where (roomreq_id, donate_list) IN ( select roomreq_id, max(donate_list) from list_donaterooms GROUP BY roomreq_id )  and no = ? ', [$lastno->no]);
         $address = DB::select('select province from users where id = (SELECT user_id FROM`roomreqs` ORDER BY id DESC limit 1)');
         $myadd = $address[0]->province;
@@ -220,7 +219,7 @@ class ListroomController extends Controller
         $InArea_remain = $InArea_add;
         $OtherArea_remain = $OtherArea_add;
         $remain = $InArea_remain+$OtherArea_remain;
-        foreach ($list as $key ) {
+        foreach ( $list as $key ) {
             // $req = DB::table('roomreqs')->select('countblood')->where('id', $key['roomreq_id'])->first();
             if( $InArea_remain > 0 ){
                 if($key['add'] > $InArea_remain){
@@ -427,7 +426,7 @@ class ListroomController extends Controller
         }
     }
 
-    public function OtherArea_random($roomreq_id, $remain, $add){
+    public function OtherArea_random($roomreq_id, $add){
         $que = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $data = $this->OtherArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
