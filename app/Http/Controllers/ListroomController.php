@@ -82,7 +82,7 @@ class ListroomController extends Controller
         $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         $cblood = $lastreq->countblood*10;
 
-        if($lastno->no == ''){
+        if($lastno->no == null){
             $lastno->no = 0;
         }
         // return $lastno->no;
@@ -385,7 +385,7 @@ class ListroomController extends Controller
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
         $lastremain = DB::select('select remaining from `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
         // return $lastremain[0]->remaining;
-        if($listnow == ''){
+        if($listnow == null){
             $listnow = 0;
         }
         // return $data;
@@ -426,7 +426,7 @@ class ListroomController extends Controller
         $data = $this->OtherArea($que->patient_province);
         $listnow = DB::table('list_donates')->select('donate_list')->where('roomreq_id',$roomreq_id)->max('donate_list');
         $lastremain = DB::select('SELECT remaining FROM `list_donaterooms` where roomreq_id =:req_id && donate_list = ( select max(donate_list) from list_donaterooms where roomreq_id =:req_id2 )-1', ['req_id' => $roomreq_id,'req_id2' => $roomreq_id]);
-        if($listnow == ''){
+        if($listnow == null){
             $listnow = 0;
         }
         // return $data;
