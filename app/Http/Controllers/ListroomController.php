@@ -81,15 +81,16 @@ class ListroomController extends Controller
         $lastreq = DB::table('roomreqs')->orderBy('id', 'desc')->first();
         $lastno = DB::table('list_donaterooms')->orderBy('no', 'desc')->first();
         $cblood = $lastreq->countblood*10;
-
-        if($lastno->no == null){
-            $lastno->no = 0;
-        }
         // return $lastno->no;
         // return $allcount;
         // input roomreq_id, countblood
         $req1 = new ListDonateroom;
-        $req1->no = $lastno->no+1;
+        if($lastno == null){
+            $no = 0;
+            $req1->no = $no+1;
+        }else{
+            $req1->no = $lastno->no+1;
+        }
         $req1->roomreq_id = $lastreq->id;
         // เริ่มที่ 0 เพราะว่าตอนทำจะได้เป็นครั้งแรก จะได้ดูง่ายๆ
         $req1->donate_list = 0;
