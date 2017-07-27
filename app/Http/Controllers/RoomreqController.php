@@ -25,7 +25,7 @@ class RoomreqController extends Controller
     public function index()
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
-        $req = DB::table('roomreqs')->select('user_id','id','created_at','updated_at','patient_name','patient_hos','patient_blood','patient_blood_type','patient_status')->where('user_id',$currentUser->id)->orderBy('updated_at', 'desc')->get();
+        $req = DB::table('roomreqs')->select('user_id','id','created_at','updated_at','patient_name','patient_hos','patient_blood','patient_blood_type','patient_status')->where('user_id',$currentUser->id)->orderBy('updated_at', 'asc')->get();
 
         return response()->json($req);
     }
@@ -92,8 +92,6 @@ class RoomreqController extends Controller
         }elseif($check->patient_status == "not complete"){
             return "patient same";
         }
-
-
     }
 
     /**
@@ -119,9 +117,7 @@ class RoomreqController extends Controller
 
     //input roomreq_id,countblood
     public function refresh(Request $request){
-
         $currentUser = JWTAuth::parseToken()->authenticate();
-
         //เช็คว่า roomreq_id ที่เข้าเป็นของเรารึเปล่า
         $update = Roomreq::find($request->roomreq_id);
         // return $update;
@@ -138,7 +134,6 @@ class RoomreqController extends Controller
 
     // input roomreq_id, thankyou
     public function thankyou(Request $request){
-
         $currentUser = JWTAuth::parseToken()->authenticate();
 
         //เช็คว่า roomreq_id ที่เข้าเป็นของเรารึเปล่า
