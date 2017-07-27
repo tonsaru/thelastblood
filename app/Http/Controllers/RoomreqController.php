@@ -29,7 +29,6 @@ class RoomreqController extends Controller
 
         return response()->json($req);
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -104,14 +103,13 @@ class RoomreqController extends Controller
      * @return \Illuminate\Http\Response
      */
      //input roomreq_id my req
-    public function show(Request $request)
-    {
+    public function show(Request $request){
         $currentUser = JWTAuth::parseToken()->authenticate();
         //check ว่าเข้าได้เฉพาะของที่ตัวเองมี
         $req = DB::table('roomreqs')->where([
-                ['id',$request->roomreq_id],
-                ['user_id',$currentUser->id]
-            ])->get();
+                    ['id',$request->roomreq_id],
+                    ['user_id',$currentUser->id]
+                ])->get();
 
         if($req->count() == 0){
             return 'no data';
