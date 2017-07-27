@@ -3697,6 +3697,7 @@ class ComposerStaticInit090f1c76703d6d4794b0eb8ecdb96c71
         'Tymon\\JWTAuth\\Validators\\TokenValidator' => __DIR__ . '/..' . '/tymon/jwt-auth/src/Validators/TokenValidator.php',
         'Tymon\\JWTAuth\\Validators\\ValidatorInterface' => __DIR__ . '/..' . '/tymon/jwt-auth/src/Validators/ValidatorInterface.php',
         'UpdateRoomreq' => __DIR__ . '/../..' . '/database/migrations/2017_07_05_094847_update_roomreq.php',
+        'UpdateRoomreq2' => __DIR__ . '/../..' . '/database/migrations/2017_07_27_123338_update_roomreq_2.php',
         'UpdateUser' => __DIR__ . '/../..' . '/database/migrations/2017_07_24_021625_update_user.php',
         'Webmozart\\Assert\\Assert' => __DIR__ . '/..' . '/webmozart/assert/src/Assert.php',
         'XdgBaseDir\\Xdg' => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src/Xdg.php',

@@ -44,7 +44,7 @@ class RoomdonateController extends Controller
         $user = DB::table('users')->where('id',$currentUser->id)->first();
 
         if($currentUser->status == "ready"){
-            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_blood,roomreqs.patient_blood_type,patient_province,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ? AND users.status_mes = ?',[ 'complete',$currentUser->id,$currentUser->id,'received']);
+            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_id,roomreqs.patient_blood,roomreqs.patient_blood_type,roomreqs.patient_province,roomreqs.patient_hos,roomreqs.created_at,roomreqs.countblood,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ? AND users.status_mes = ?',[ 'complete',$currentUser->id,$currentUser->id,'received']);
             if($req == null){
                 $req = 'no data';
             }
@@ -138,17 +138,20 @@ class RoomdonateController extends Controller
         // }
         // return $req;
 
-        $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
+        // $check = DB::table('roomdonates')->select('roomreq_id')->where('user_id',$currentUser->id);
         if($currentUser->status == "ready"){
-            $req = DB::table('roomreqs')
-                ->join('users', 'users.id', '=', 'roomreqs.user_id')
-                ->where('user_id', '!=', $currentUser->id)
-                ->where('patient_status', '!=', 'complete')
-                ->where('patient_province', $currentUser->province)
-                ->where('roomreqs.id',$request->roomreq_id)
-                ->select('roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_province','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_detail','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long')
-                ->whereNotIn('roomreqs.id', $check)
-                ->get();
+            // $req = DB::table('roomreqs')
+            //     ->join('users', 'users.id', '=', 'roomreqs.user_id')
+            //     ->where('user_id', '!=', $currentUser->id)
+            //     ->where('patient_status', '!=', 'complete')
+            //     ->where('patient_province', $currentUser->province)
+            //     ->where('roomreqs.id',$request->roomreq_id)
+            //     ->select('roomreqs.id','roomreqs.patient_name','roomreqs.patient_blood','roomreqs.patient_blood_type','roomreqs.patient_province','roomreqs.patient_name','roomreqs.patient_id','roomreqs.patient_detail','roomreqs.patient_hos','roomreqs.patient_hos_la','roomreqs.patient_hos_long')
+            //     ->whereNotIn('roomreqs.id', $check)
+            //     ->get();
+
+            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_blood,roomreqs.patient_blood_type,patient_province,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ? AND users.status_mes = ?',[ 'complete',$currentUser->id,$currentUser->id,'received']);
+
             return $req;
         }else{
             return "no data";

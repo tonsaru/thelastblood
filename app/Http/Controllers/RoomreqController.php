@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Roomreq;
 use App\User;
+use Carbon\Carbon;
 use Config;
 use DB;
 use Dingo\Api\Routing\Helpers;
@@ -219,5 +220,9 @@ class RoomreqController extends Controller
       $roomreqs = Roomreq::all();
       // show data to our view
       return view('Roomreq.index2',['roomreqs' => $roomreqs]);
+    }
+
+    public function testtime(){
+        return "asda";
     }
 }

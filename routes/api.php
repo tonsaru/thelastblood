@@ -52,6 +52,7 @@ $api->version('v1', function (Router $api) {
         $api->post('req/refresh','App\\Http\\Controllers\\RoomreqController@refresh');
         $api->post('req/success','App\\Http\\Controllers\\RoomreqController@status_suc');
         $api->post('req/thankyou','App\\Http\\Controllers\\RoomreqController@thankyou');
+        $api->get('req/testtime','App\\Http\\Controllers\\RoomreqController@testtime');
 
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
         $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@showdetail');
