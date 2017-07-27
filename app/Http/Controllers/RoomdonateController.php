@@ -44,7 +44,7 @@ class RoomdonateController extends Controller
         $user = DB::table('users')->where('id',$currentUser->id)->first();
 
         if($currentUser->status == "ready"){
-            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_id,roomreqs.patient_blood,roomreqs.patient_blood_type,roomreqs.patient_province,roomreqs.patient_hos,roomreqs.created_at,roomreqs.countblood,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ? AND users.status_mes = ?',[ 'complete',$currentUser->id,$currentUser->id,'received']);
+            $req = DB::select('select users.name,roomreqs.user_id,roomreqs.id,roomreqs.patient_name,roomreqs.patient_id,roomreqs.patient_blood,roomreqs.patient_blood_type,roomreqs.patient_province,roomreqs.patient_hos,roomreqs.created_at,roomreqs.countblood,roomreqs.patient_detail,users.img from roomreqs join users on users.id = roomreqs.user_id join list_donates on list_donates.roomreq_id = roomreqs.id where roomreqs.patient_status != ? AND roomreqs.user_id != ? AND list_donates.user_id = ? AND users.status_mes = ?',[ 'complete',$currentUser->id,$currentUser->id,'received']);
             if($req == null){
                 $req = 'no data';
             }
