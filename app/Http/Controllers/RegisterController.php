@@ -29,8 +29,8 @@ class RegisterController extends Controller
         $user = new User;
         $user->name = strtolower($request->name);
         $user->password = strtolower($request->password);
-        $user->blood = strtolower($request->blood);
-        $user->blood_type = strtolower($request->blood_type);
+        $user->blood = strtoupper($request->blood);
+        $user->blood_type = strtoupper($request->blood_type);
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->birthyear = $request->birthyear;

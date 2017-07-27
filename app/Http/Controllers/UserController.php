@@ -123,6 +123,10 @@ class UserController extends Controller
         return $dona;
     }
 
+    public function strupper(){
+          DB::statement('UPDATE users SET blood = UPPER(blood)');
+      }
+
     //swap ready,unready
     public function swapstatus(){
         $currentUser = JWTAuth::parseToken()->authenticate();

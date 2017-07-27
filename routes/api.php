@@ -40,6 +40,7 @@ $api->version('v1', function (Router $api) {
         $api->get('user', 'App\\Http\\Controllers\\UserController@index');
         $api->get('logout', 'App\\Http\\Controllers\\UserController@logout');
         $api->get('user/donate', 'App\\Http\\Controllers\\UserController@donate');
+        $api->get('user/strupper', 'App\\Http\\Controllers\\UserController@strupper');
         $api->get('user/swap', 'App\\Http\\Controllers\\UserController@swapstatus');
         $api->post('user/avatar','App\\Http\\Controllers\\UserController@update_avatar');
         $api->post('user/donate/detail', 'App\\Http\\Controllers\\UserController@donate_detail');
