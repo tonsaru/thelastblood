@@ -56,7 +56,7 @@ $api->version('v1', function (Router $api) {
 
         $api->resource('donate','App\\Http\\Controllers\\RoomdonateController');
         $api->post('donate/detail','App\\Http\\Controllers\\RoomdonateController@showdetail');
-        $api->get('donate/show','App\\Http\\Controllers\\RoomdonateController@show');
+        $api->get('donates/show','App\\Http\\Controllers\\RoomdonateController@show');
 
         $api->resource('friend','App\\Http\\Controllers\\FriendController');
         $api->post('friend/detail','App\\Http\\Controllers\\FriendController@indexGroup');
