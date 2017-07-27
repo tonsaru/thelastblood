@@ -110,23 +110,24 @@ class ListroomController extends Controller
         $req1->save();
 
         $allcount = $this->Nreceived_count();
-        if($cblood >= $allcount){
-            $add = $allcount;
-            // return "asda";
-            $this->manageblood_new($add);
-        }else{
-
-            $add = $cblood;
-            // return "asada";
-            $this->manageblood_new($add);
-            if( $this->roomreq_oldcount() > 0){
-                // return "asada";
-                $all_remain = $allcount - $add;
-                // return "asada";
-                $this->manageblood_old($all_remain);
-            }
-
+        if($allcount > 0 ){
+          if($cblood >= $allcount){
+              $add = $allcount;
+              // return "asda";
+              $this->manageblood_new($add);
+          }else{
+              $add = $cblood;
+              // return "asada";
+              $this->manageblood_new($add);
+              if( $this->roomreq_oldcount() > 0){
+                  // return "asada";
+                  $all_remain = $allcount - $add;
+                  // return "asada";
+                  $this->manageblood_old($all_remain);
+              }
+          }
         }
+
         // return "finish";
     }
 
