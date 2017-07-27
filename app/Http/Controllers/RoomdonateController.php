@@ -51,7 +51,7 @@ class RoomdonateController extends Controller
             $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
             return $data;
         }else{
-            $req = null;
+            $req = 'no data';
             $data = array('user' => $req, 'last_date_donate' => $user->last_date_donate ,'status'=>$user->status);
             return $data;
         }
