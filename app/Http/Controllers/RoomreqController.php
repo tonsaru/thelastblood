@@ -165,6 +165,7 @@ class RoomreqController extends Controller
                     return "Status complete already";
                 }else{
                     $update->patient_status = 'complete';
+                    $update->complete_time = Carbon::now();
                     $update->save();
                     return "Status RoomreqID : ".$update->id." is ".$update->patient_status;
                 }
@@ -221,6 +222,9 @@ class RoomreqController extends Controller
     }
 
     public function testtime(){
-        return "asda";
+        $now = Carbon::now();
+        $add = Carbon::now()->addDays(3);
+        $dif = $now->diffInDays($add);
+        return $dif;
     }
 }
